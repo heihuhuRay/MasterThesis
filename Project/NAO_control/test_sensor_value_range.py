@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# __date__ = 20180131
+# modified by: Ray
+
 import socket
 import time
 import threading
@@ -13,6 +18,12 @@ from naoqi import ALProxy
 ######################################
 NAOIP = "0.0.0.0"
 PORT= 9559
+# init max and min value for each sensor
+min_R = [1023, 1023, 1023, 1023, 1023, 1023, 1023]
+max_R = [0, 0, 0, 0, 0, 0, 0]
+
+min_L = [1023, 1023, 1023, 1023, 1023, 1023, 1023]
+max_L = [0, 0, 0, 0, 0, 0, 0]
 
 ReadlistData = [
               ## Head Touch
@@ -60,16 +71,103 @@ while True:
         break 
 
     data = memProxy.getData("WristForceSensor")
-    print('LeftSens,           RightSens')
+    # Example Data
+    #    [[778, 868, 867, 848, 901, 831, 554], [411, 769, 863, 621, 772, 678, 699]]
+    print('Right_Wrist_Sensor,                  Left_Wrist_Sensors')
     print(data)
-    
-    #print data2[4]
 
-    #print data2[4]
-    #print data2[0]
-    #print "--"
-    #print data2[1]
-    
+
+    ########### calc range for each sensor ###########################
+    # update max_R
+    if data[0][0] > max_R[0]:
+        max_R[0] = data[0][0]
+    if data[0][1] > max_R[1]:
+        max_R[1] = data[0][1]
+    if data[0][2] > max_R[2]:
+        max_R[2] = data[0][2]
+    if data[0][3] > max_R[3]:
+        max_R[3] = data[0][3]
+    if data[0][4] > max_R[4]:
+        max_R[4] = data[0][4]
+    if data[0][5] > max_R[5]:
+        max_R[5] = data[0][5]
+    if data[0][6] > max_R[6]:
+        max_R[6] = data[0][6]
+    # update min_R
+    if data[0][0] < min_R[0]:
+        min_R[0] = data[0][0]
+    if data[0][1] < min_R[1]:
+        min_R[1] = data[0][1]
+    if data[0][2] < min_R[2]:
+        min_R[2] = data[0][2]
+    if data[0][3] < min_R[3]:
+        min_R[3] = data[0][3]
+    if data[0][4] < min_R[4]:
+        min_R[4] = data[0][4]
+    if data[0][5] < min_R[5]:
+        min_R[5] = data[0][5]
+    if data[0][6] < min_R[6]:
+        min_R[6] = data[0][6]
+
+    # update max_L
+    if data[1][0] > max_L[0]:
+        max_L[0] = data[1][0]
+    if data[1][1] > max_L[1]:
+        max_L[1] = data[1][1]
+    if data[1][2] > max_L[2]:
+        max_L[2] = data[1][2]
+    if data[1][3] > max_L[3]:
+        max_L[3] = data[1][3]
+    if data[1][4] > max_L[4]:
+        max_L[4] = data[1][4]
+    if data[1][5] > max_L[5]:
+        max_L[5] = data[1][5]
+    if data[1][6] > max_L[6]:
+        max_L[6] = data[1][6]
+    # update min_L
+    if data[1][0] < min_L[0]:
+        min_L[0] = data[1][0]
+    if data[1][1] < min_L[1]:
+        min_L[1] = data[1][1]
+    if data[1][2] < min_L[2]:
+        min_L[2] = data[1][2]
+    if data[1][3] < min_L[3]:
+        min_L[3] = data[1][3]
+    if data[1][4] < min_L[4]:
+        min_L[4] = data[1][4]
+    if data[1][5] < min_L[5]:
+        min_L[5] = data[1][5]
+    if data[1][6] < min_L[6]:
+        min_L[6] = data[1][6]
+
     time.sleep(0.1)
+
+print('min_R', min_R)
+print('max_R', max_R)
+print('min_L', min_L)
+print('max_L', max_L)
+
+# normalization
+range_R = [ max_R[0]-min_R[0],
+            max_R[1]-min_R[1],
+            max_R[2]-min_R[2],
+            max_R[3]-min_R[3],
+            max_R[4]-min_R[4],
+            max_R[5]-min_R[5],
+            max_R[6]-min_R[6],
+            ]
+
+range_L = [ max_L[0]-min_L[0],
+            max_L[1]-min_L[1],
+            max_L[2]-min_L[2],
+            max_L[3]-min_L[3],
+            max_L[4]-min_L[4],
+            max_L[5]-min_L[5],
+            max_L[6]-min_L[6],
+            ]
+
+print('range_R:', range_R)
+print('range_L:', range_L)
+
 
 movObj.setStiffnesses('HeadYaw',0.0)
