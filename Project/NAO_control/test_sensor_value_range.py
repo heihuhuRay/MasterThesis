@@ -73,7 +73,9 @@ while True:
     data = memProxy.getData("WristForceSensor")
     # Example Data
     #    [[778, 868, 867, 848, 901, 831, 554], [411, 769, 863, 621, 772, 678, 699]]
+    #    [[R_1, R_2, R_3, R_4, R_5, R_6, R_7], [L_1, L_2, L_3, L_4, L_5, L_6, L_7]]
     print('Right_Wrist_Sensor,                  Left_Wrist_Sensors')
+    print("[[R_1, R_2, R_3, R_4, R_5, R_6, R_7], [L_1, L_2, L_3, L_4, L_5, L_6, L_7]]")
     print(data)
 
 
@@ -148,26 +150,46 @@ print('min_L', min_L)
 print('max_L', max_L)
 
 # normalization
-range_R = [ max_R[0]-min_R[0],
-            max_R[1]-min_R[1],
-            max_R[2]-min_R[2],
-            max_R[3]-min_R[3],
-            max_R[4]-min_R[4],
-            max_R[5]-min_R[5],
-            max_R[6]-min_R[6],
+range_R = [ max_R[0] - min_R[0],
+            max_R[1] - min_R[1],
+            max_R[2] - min_R[2],
+            max_R[3] - min_R[3],
+            max_R[4] - min_R[4],
+            max_R[5] - min_R[5],
+            max_R[6] - min_R[6],
             ]
 
-range_L = [ max_L[0]-min_L[0],
-            max_L[1]-min_L[1],
-            max_L[2]-min_L[2],
-            max_L[3]-min_L[3],
-            max_L[4]-min_L[4],
-            max_L[5]-min_L[5],
-            max_L[6]-min_L[6],
+range_L = [ max_L[0] - min_L[0],
+            max_L[1] - min_L[1],
+            max_L[2] - min_L[2],
+            max_L[3] - min_L[3],
+            max_L[4] - min_L[4],
+            max_L[5] - min_L[5],
+            max_L[6] - min_L[6],
             ]
 
 print('range_R:', range_R)
 print('range_L:', range_L)
 
+R_nor_data = [  (data[0][0] - min_R[0])/range_R[0],
+                (data[0][1] - min_R[1])/range_R[1],
+                (data[0][2] - min_R[2])/range_R[2],
+                (data[0][3] - min_R[3])/range_R[3],
+                (data[0][4] - min_R[4])/range_R[4],
+                (data[0][5] - min_R[5])/range_R[5],
+                (data[0][6] - min_R[6])/range_R[6],
+            ]
+
+L_nor_data = [  (data[1][0] - min_L[0])/range_L[0],
+                (data[1][1] - min_L[1])/range_L[1],
+                (data[1][2] - min_L[2])/range_L[2],
+                (data[1][3] - min_L[3])/range_L[3],
+                (data[1][4] - min_L[4])/range_L[4],
+                (data[1][5] - min_L[5])/range_L[5],
+                (data[1][6] - min_L[6])/range_L[6],
+            ]
+
+#print("[[R_1, R_2, R_3, R_4, R_5, R_6, R_7], [L_1, L_2, L_3, L_4, L_5, L_6, L_7]]")
+#print("[", R_nor_data, L_nor_data, "]")
 
 movObj.setStiffnesses('HeadYaw',0.0)
