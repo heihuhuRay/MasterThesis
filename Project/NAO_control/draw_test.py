@@ -11,10 +11,10 @@ def animate(i):
     xar = []
     yar = []
     for eachLine in dataArray:
-        if len(eachLine)>1:
-            x,y = eachLine.split(',')
-            xar.append(int(x))
-            yar.append(int(y))
+    if len(eachLine)>1:
+        x,y = eachLine.split(',')
+        xar.append(int(x))
+        yar.append(int(y))
     ax1.clear()
     ax1.plot(xar,yar)
 ani = animation.FuncAnimation(fig, animate, interval=1000)
