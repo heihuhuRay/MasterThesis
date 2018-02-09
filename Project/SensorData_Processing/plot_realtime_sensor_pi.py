@@ -44,10 +44,10 @@ left_sensor = [0]*num_sensor_right
 
 
 plt.xlim(0,20)
-plt.ylim(480, 530)
+plt.ylim(-1, 1)
 plt.ion()
 y = []
-i = 0
+count = 0
 
 
 while True:
@@ -58,7 +58,7 @@ while True:
     for i in range(0,num_sensor_right):
         left_sensor[i] = readadcB(i)
     # assign sensor value to data
-    data = [right_senso, left_sensor]
+    data = [right_sensor, left_sensor]
 
     R_nor_data = [  (data[0][0] - sti_R[0])/range_R[0],
             (data[0][1] - sti_R[1])/range_R[1],
@@ -79,9 +79,9 @@ while True:
         ]
 
     temp = R_nor_data[0]
-    i += 1
+    count += 1
     y.append(temp)
-    if i>20:
-        plt.xlim(i-20,i)
+    if count > 20:
+        plt.xlim(count-20, count)
     plt.plot(y)
     plt.pause(0.005)
