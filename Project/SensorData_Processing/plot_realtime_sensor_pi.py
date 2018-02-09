@@ -23,14 +23,17 @@ sti_R = [598, 722, 725, 729, 798, 733, 469]
 sti_L = [350, 660, 730, 490, 690, 550, 570]
 sti_R = [590, 720, 720, 720, 790, 730, 460]
 '''
-range_R = [275.0, 219.0, 170.0, 188.0,  86.0, 104.0, 132.0]
-range_L = [237.0, 254.0, 300.0, 448.0, 435.0, 296.0, 381.0]
+range_R = []
+range_L = []
 ##################################################################################
 
 for i in range(7):
     r_R = max_R[i] - sti_R[i]
     r_L = max_L[i] - sti_L[i]
-print(r_R)
+    range_R.append(r_R)
+    range_L.append(r_L)
+print(range_R)
+print(range_L)
 
 num_sensor_left = 7
 num_sensor_right = 7
@@ -57,25 +60,25 @@ while True:
     # assign sensor value to data
     data = [right_senso, left_sensor]
 
-    R_nor_data = [  (data[0][0] - min_R[0])/range_R[0],
-            (data[0][1] - min_R[1])/range_R[1],
-            (data[0][2] - min_R[2])/range_R[2],
-            (data[0][3] - min_R[3])/range_R[3],
-            (data[0][4] - min_R[4])/range_R[4],
-            (data[0][5] - min_R[5])/range_R[5],
-            (data[0][6] - min_R[6])/range_R[6],
+    R_nor_data = [  (data[0][0] - sti_R[0])/range_R[0],
+            (data[0][1] - sti_R[1])/range_R[1],
+            (data[0][2] - sti_R[2])/range_R[2],
+            (data[0][3] - sti_R[3])/range_R[3],
+            (data[0][4] - sti_R[4])/range_R[4],
+            (data[0][5] - sti_R[5])/range_R[5],
+            (data[0][6] - sti_R[6])/range_R[6],
         ]
 
-    L_nor_data = [  (data[1][0] - min_L[0])/range_L[0],
-            (data[1][1] - min_L[1])/range_L[1],
-            (data[1][2] - min_L[2])/range_L[2],
-            (data[1][3] - min_L[3])/range_L[3],
-            (data[1][4] - min_L[4])/range_L[4],
-            (data[1][5] - min_L[5])/range_L[5],
-            (data[1][6] - min_L[6])/range_L[6],
+    L_nor_data = [  (data[1][0] - sti_L[0])/range_L[0],
+            (data[1][1] - sti_L[1])/range_L[1],
+            (data[1][2] - sti_L[2])/range_L[2],
+            (data[1][3] - sti_L[3])/range_L[3],
+            (data[1][4] - sti_L[4])/range_L[4],
+            (data[1][5] - sti_L[5])/range_L[5],
+            (data[1][6] - sti_L[6])/range_L[6],
         ]
-    right_sensor[0]  = readadcA(0)
-    temp = right_sensor[0]
+
+    temp = R_nor_data[0]
     i += 1
     y.append(temp)
     if i>20:
