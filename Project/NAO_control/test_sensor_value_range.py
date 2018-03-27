@@ -17,7 +17,7 @@ import math
 import numpy as np
 import os
 import sys
-from naoqi import ALProxy
+
 
 ######################################
 NAOIP = "0.0.0.0"

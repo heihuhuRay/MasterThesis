@@ -1,13 +1,20 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# __date__ = 20180327
+# modified by: Ray
+
+import sys
+import time
+import json
+import NaoConnect
 import numpy as np
 from alpha_value import *
 from SetTiming import *
 from MLMPCPG import *
 from NAOMotor import *
 from random import randint
-import sys
-import time
 
-import NaoConnect
+
 
 if NaoConnect.NaoRobotConnect.RealNaoRobot:
     print "RealNaoRobot: ", NaoConnect.NaoRobotConnect.RealNaoRobot[0]
@@ -74,6 +81,9 @@ global All_Sensor
 global All_FSR, All_cur_out,All_RG_out
 global All_PF_out, All_zmp, All_alpha
 
+# sensor data transmitted from raspi
+memProxy = ALProxy("ALMemory", NAOIP, PORT)
+data = memProxy.getData("WristForceSensor")
 
 
 All_Command=[]
@@ -171,6 +181,10 @@ for i in range(0, len(myCont)):
 print initPos
 
 
+
+
+
+# mian loops starts here
 for I in range(0,50000): # 50000 is the running time of the action
     startTime = time.time()
     t= I*myT.T
@@ -190,19 +204,18 @@ for I in range(0,50000): # 50000 is the running time of the action
         ExtInjCurr = 0
         ExtInjCurr1 = 0
 
+####### !!!the following part is for pitch ######
+    # if I==270 :
+    #     myT.T1 = t
+    #     myT.T2 = myT.T1 + myT.signal_pulse_width
 
-    if I==270 :
-
-        myT.T1 = t
-        myT.T2 = myT.T1 + myT.signal_pulse_width
-
-    if t >= myT.T1 and t <= myT.T2:
-        ExtInjCurr2 = +1
-        ExtInjCurr3 = -1
-        print "At ",I," current is injected"
-    else:
-        ExtInjCurr2 = 0
-        ExtInjCurr3 = 0
+    # if t >= myT.T1 and t <= myT.T2:
+    #     ExtInjCurr2 = +1
+    #     ExtInjCurr3 = -1
+    #     print "At ",I," current is injected"
+    # else:
+    #     ExtInjCurr2 = 0
+    #     ExtInjCurr3 = 0
 
 
 
@@ -217,21 +230,22 @@ for I in range(0,50000): # 50000 is the running time of the action
             ii].RG.F.InjCurrent_MultiplicationFactor
         myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr1) * myCont[
             ii].RG.E.InjCurrent_MultiplicationFactor
+    ####### !!!the following part is for pitch ######
+    # for ii in [L_HIP_PITCH, R_KNEE_PITCH, R_ANKLE_PITCH]:
+    #     myCont[ii].RG.F.InjCurrent_value = +1 * (ExtInjCurr2) * myCont[
+    #         ii].RG.F.InjCurrent_MultiplicationFactor
+    #     myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr2) * myCont[
+    #         ii].RG.E.InjCurrent_MultiplicationFactor
 
-    for ii in [L_HIP_PITCH, R_KNEE_PITCH, R_ANKLE_PITCH]:
-        myCont[ii].RG.F.InjCurrent_value = +1 * (ExtInjCurr2) * myCont[
-            ii].RG.F.InjCurrent_MultiplicationFactor
-        myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr2) * myCont[
-            ii].RG.E.InjCurrent_MultiplicationFactor
-
-    for ii in [L_KNEE_PITCH, L_ANKLE_PITCH, R_HIP_PITCH]:
-        myCont[ii].RG.F.InjCurrent_value = 1 * (ExtInjCurr3) * myCont[
-            ii].RG.F.InjCurrent_MultiplicationFactor
-        myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr3) * myCont[
-            ii].RG.E.InjCurrent_MultiplicationFactor
+    # for ii in [L_KNEE_PITCH, L_ANKLE_PITCH, R_HIP_PITCH]:
+    #     myCont[ii].RG.F.InjCurrent_value = 1 * (ExtInjCurr3) * myCont[
+    #         ii].RG.F.InjCurrent_MultiplicationFactor
+    #     myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr3) * myCont[
+    #         ii].RG.E.InjCurrent_MultiplicationFactor
 
 #TODO just update this 4 joints !!!
-    for i in [R_ANKLE_ROLL, R_HIP_ROLL,L_HIP_ROLL, L_ANKLE_ROLL, L_KNEE_PITCH, L_ANKLE_PITCH, R_HIP_PITCH]:
+    #for i in [R_ANKLE_ROLL, R_HIP_ROLL,L_HIP_ROLL, L_ANKLE_ROLL, L_KNEE_PITCH, L_ANKLE_PITCH, R_HIP_PITCH]:
+    for i in [R_ANKLE_ROLL, R_HIP_ROLL,L_HIP_ROLL, L_ANKLE_ROLL]:
         myCont[i].fUpdateLocomotionNetwork(myT, initPos[i])
 
 
@@ -243,3 +257,8 @@ for I in range(0,50000): # 50000 is the running time of the action
     NaoConnect.NaoSetAngles(MotorCommand)
 
     initPos = NaoConnect.NaoGetAngles()
+
+
+# Writing JSON data
+with open('data.json', 'w') as f:
+    json.dump(data, f)
