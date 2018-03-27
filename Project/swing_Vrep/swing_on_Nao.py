@@ -3,29 +3,7 @@ import naoqi
 from naoqi import ALProxy
 import math
 import time
-
-from naoqi import ALModule
-#import matplotlib.pyplot as plt
-import numpy as np
-
-from SetTiming import *
-from MLMPCPG import *
-from NAOMotor import *
-from random import randint
-import sys
-
-sys.path.append('mylib/naoConnect')
-sys.path.append('mylib/MLMPCPG')
-sys.path.append('mylib/naoPlot')
-sys.path.append('mylib/extratools')
-sys.path.append('mylib/NAOKin')
-sys.path.append('mylib\NNET\SOM')
-sys.path.append('mylib\MotorProgramInCPG')
-
-# import motorProgramClass
-import MotorProgram_Class as motorProgramClass
-import naokinematics
-
+import json
 ######################################
 from SetTiming import *
 from MLMPCPG import *
@@ -33,11 +11,9 @@ from NAOMotor import *
 from random import randint
 from alpha_value import *
 
-import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
 
-#from saveObj import saveObj
-######################################
+
+
 file_path = "mylib\\payam\\"
 
 model = 'robot'
@@ -51,9 +27,7 @@ if model == 'LArm2D':
 
     initPos = np.genfromtxt(file_path + "CurPos.txt", delimiter=",")
     initPos = np.array(initPos)
-    # for i in range(involved_joints.shape[0]):
-    #   angles[involved_joints[i]] = starting_val[i] * math.pi / 180
-elif model == 'robot':
+    
     model = 0
     import NaoConnect
 
@@ -94,14 +68,6 @@ elif model == 'robot':
 
     legOpenAngleInit = 5
     angleCount = 0.0
-    # while angleCount <= legOpenAngleInit:
-    #     initPos[R_HIP_PITCH] = -1 * angleCount * math.pi / 180.0
-    #     initPos[R_ANKLE_PITCH] = angleCount * math.pi / 180.0
-    #     initPos[L_HIP_PITCH] = angleCount * math.pi / 180.0
-    #     initPos[L_ANKLE_PITCH] = -1 * angleCount * math.pi / 180.0
-    #     angleCount = angleCount + 0.2
-    #     NaoConnect.NaoSetAngles(initPos)
-    #     time.sleep(0.1)
 
     hip_pitch_angle = 20
     knee_pitch_angle = 30
@@ -118,18 +84,9 @@ elif model == 'robot':
         NaoConnect.NaoSetAngles(initPos)
         time.sleep(0.015)
 
-    # initPos[L_HIP_ROLL] = -5 * math.pi / 180.0
-    # initPos[R_HIP_ROLL] = 5 * math.pi / 180.0
 
     initPos[L_ANKLE_ROLL] = 0 * math.pi / 180.0
     initPos[R_ANKLE_ROLL] = 0 * math.pi / 180.0
-
-    # initPos[L_KNEE_PITCH] = 30 * math.pi / 180.0
-    # initPos[R_KNEE_PITCH] = 30 * math.pi / 180.0
-    # initPos[L_ANKLE_PITCH] = -20 * math.pi / 180.0
-    # initPos[R_ANKLE_PITCH] = -20 * math.pi / 180.0
-    # initPos[L_HIP_PITCH] = -10 * math.pi / 180.0
-    # initPos[R_HIP_PITCH] = -10 * math.pi / 180.0
     NaoConnect.NaoSetAngles(initPos)
 
 
@@ -140,6 +97,9 @@ global All_Sensor
 global All_FSR, All_cur_out,All_RG_out
 global All_PF_out, All_zmp, All_alpha
 
+# Connect to the module ALMemoryProxy
+memProxy = ALProxy("ALMemory", NAOIP, PORT)
+data = memProxy.getData("WristForceSensor")
 
 
 All_Command=[]
@@ -169,7 +129,7 @@ for i in range(0, len(myCont)):
 for i in range(0, len(myCont)):
     myCont[i].fUpdateLocomotionNetwork(myT,initPos[i])
 print 'Robot is ready to move..!!'
-time.sleep(3)
+time.sleep(1)
 
 all_joint_tm = 0.15
 
@@ -229,11 +189,18 @@ ExtInjCurr3 = 0
 initPos = NaoConnect.NaoGetAngles()
 for i in range(0, len(myCont)):
     myCont[i].fUpdateInitPos(initPos[i])
-    myCont[i].joint.joint_motor_signal =   myCont[i].joint.init_motor_pos
+    myCont[i].joint.joint_motor_signal = myCont[i].joint.init_motor_pos
 print initPos
 
-
-for I in range(0,5000):
+# store the sensor data, used to store in json file
+#   [[R_1, R_2, R_3, R_4, R_5, R_6, R_7], [L_1, L_2, L_3, L_4, L_5, L_6, L_7]]
+sensor_data = {}
+# !!! main loop
+for I in range(0,500000):
+    index = I % 500
+    if index == 0:
+        sensor_data[index] = sensor_data
+    
     startTime = time.time()
     t= I*myT.T
 
@@ -253,21 +220,6 @@ for I in range(0,5000):
         ExtInjCurr1 = 0
 
 
-    if I==270 :
-
-        myT.T1 = t
-        myT.T2 = myT.T1 + myT.signal_pulse_width
-
-    if t >= myT.T1 and t <= myT.T2:
-        ExtInjCurr2 = +1
-        ExtInjCurr3 = -1
-        print "At ",I," current is injected"
-    else:
-        ExtInjCurr2 = 0
-        ExtInjCurr3 = 0
-
-
-
     for ii in [R_ANKLE_ROLL, R_HIP_ROLL]:
         myCont[ii].RG.F.InjCurrent_value = +1 * (ExtInjCurr) * myCont[
             ii].RG.F.InjCurrent_MultiplicationFactor
@@ -279,19 +231,6 @@ for I in range(0,5000):
             ii].RG.F.InjCurrent_MultiplicationFactor
         myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr1) * myCont[
             ii].RG.E.InjCurrent_MultiplicationFactor
-
-    for ii in [L_HIP_PITCH, R_KNEE_PITCH, R_ANKLE_PITCH]:
-        myCont[ii].RG.F.InjCurrent_value = +1 * (ExtInjCurr2) * myCont[
-            ii].RG.F.InjCurrent_MultiplicationFactor
-        myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr2) * myCont[
-            ii].RG.E.InjCurrent_MultiplicationFactor
-
-    for ii in [L_KNEE_PITCH, L_ANKLE_PITCH, R_HIP_PITCH]:
-        myCont[ii].RG.F.InjCurrent_value = 1 * (ExtInjCurr3) * myCont[
-            ii].RG.F.InjCurrent_MultiplicationFactor
-        myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr3) * myCont[
-            ii].RG.E.InjCurrent_MultiplicationFactor
-
 
     for i in [R_ANKLE_ROLL, R_HIP_ROLL,L_HIP_ROLL, L_ANKLE_ROLL]:
         myCont[i].fUpdateLocomotionNetwork(myT, initPos[i])
@@ -306,3 +245,7 @@ for I in range(0,5000):
 
     initPos = NaoConnect.NaoGetAngles()
 
+
+# Writing JSON data
+with open('data.json', 'w') as f:
+    json.dump(sensor_data, f)

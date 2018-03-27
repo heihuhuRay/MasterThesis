@@ -258,7 +258,3 @@ for I in range(0,50000): # 50000 is the running time of the action
 
     initPos = NaoConnect.NaoGetAngles()
 
-
-# Writing JSON data
-with open('data.json', 'w') as f:
-    json.dump(data, f)
