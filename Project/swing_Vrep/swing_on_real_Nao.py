@@ -3,19 +3,45 @@ import naoqi
 from naoqi import ALProxy
 import math
 import time
-import json
+
+from naoqi import ALModule
+#import matplotlib.pyplot as plt
+import numpy as np
+
+from SetTiming import *
+from MLMPCPG import *
+from NAOMotor import *
+from random import randint
+import sys
+
+sys.path.append('mylib/naoConnect')
+sys.path.append('mylib/MLMPCPG')
+sys.path.append('mylib/naoPlot')
+sys.path.append('mylib/extratools')
+sys.path.append('mylib/NAOKin')
+sys.path.append('mylib\NNET\SOM')
+sys.path.append('mylib\MotorProgramInCPG')
+
+# import motorProgramClass
+#import MotorProgram_Class as motorProgramClass
+#import naokinematics
+
 ######################################
 from SetTiming import *
 from MLMPCPG import *
 from NAOMotor import *
 from random import randint
 from alpha_value import *
-import NaoConnect
 
+#import matplotlib.pyplot as plt
+#from matplotlib.lines import Line2D
 
+#from saveObj import saveObj
+######################################
+file_path = "mylib\\payam\\"
 
+model = 'robot'
 # model = 'robot'
-'''
 if model == 'LArm2D':
     model = 1
     from inverseKin import invKin
@@ -25,7 +51,9 @@ if model == 'LArm2D':
 
     initPos = np.genfromtxt(file_path + "CurPos.txt", delimiter=",")
     initPos = np.array(initPos)
-    
+    # for i in range(involved_joints.shape[0]):
+    #   angles[involved_joints[i]] = starting_val[i] * math.pi / 180
+elif model == 'robot':
     model = 0
     import NaoConnect
 
@@ -35,8 +63,8 @@ if model == 'LArm2D':
     if NaoConnect.NaoVrepConnect.NaoVrep:
         print "NaoVrep: ", NaoConnect.NaoVrepConnect.NaoVrep[0]
 
-    if NaoConnect.NaoWebotsConnect.NaoWebots:
-        print "NaoWebots: ", NaoConnect.NaoQiConnect.NaoWebots[0]
+    # if NaoConnect.NaoWebotsConnect.NaoWebots:
+    #     print "NaoWebots: ", NaoConnect.NaoQiConnect.NaoWebots[0]
 
     NAOosON = NaoConnect.NaoRobotConnect.RealNaoRobot or NaoConnect.NaoVrepConnect.NaoVrep or NaoConnect.NaoWebotsConnect.NaoWebots
 
@@ -66,6 +94,14 @@ if model == 'LArm2D':
 
     legOpenAngleInit = 5
     angleCount = 0.0
+    # while angleCount <= legOpenAngleInit:
+    #     initPos[R_HIP_PITCH] = -1 * angleCount * math.pi / 180.0
+    #     initPos[R_ANKLE_PITCH] = angleCount * math.pi / 180.0
+    #     initPos[L_HIP_PITCH] = angleCount * math.pi / 180.0
+    #     initPos[L_ANKLE_PITCH] = -1 * angleCount * math.pi / 180.0
+    #     angleCount = angleCount + 0.2
+    #     NaoConnect.NaoSetAngles(initPos)
+    #     time.sleep(0.1)
 
     hip_pitch_angle = 20
     knee_pitch_angle = 30
@@ -82,11 +118,20 @@ if model == 'LArm2D':
         NaoConnect.NaoSetAngles(initPos)
         time.sleep(0.015)
 
+    # initPos[L_HIP_ROLL] = -5 * math.pi / 180.0
+    # initPos[R_HIP_ROLL] = 5 * math.pi / 180.0
 
     initPos[L_ANKLE_ROLL] = 0 * math.pi / 180.0
     initPos[R_ANKLE_ROLL] = 0 * math.pi / 180.0
+
+    # initPos[L_KNEE_PITCH] = 30 * math.pi / 180.0
+    # initPos[R_KNEE_PITCH] = 30 * math.pi / 180.0
+    # initPos[L_ANKLE_PITCH] = -20 * math.pi / 180.0
+    # initPos[R_ANKLE_PITCH] = -20 * math.pi / 180.0
+    # initPos[L_HIP_PITCH] = -10 * math.pi / 180.0
+    # initPos[R_HIP_PITCH] = -10 * math.pi / 180.0
     NaoConnect.NaoSetAngles(initPos)
-'''
+
 
 number_cpg = 26
 
@@ -95,12 +140,6 @@ global All_Sensor
 global All_FSR, All_cur_out,All_RG_out
 global All_PF_out, All_zmp, All_alpha
 
-NAOIP = "0.0.0.0"
-PORT= 9559
-
-# Connect to the module ALMemoryProxy
-memProxy = ALProxy("ALMemory", NAOIP, PORT)
-data = memProxy.getData("WristForceSensor")
 
 
 All_Command=[]
@@ -122,11 +161,7 @@ plusPloarity  = 1
 minusPloarity  = -1
 tempCounter = 0
 
-
-movObj = ALProxy("ALMotion",NAOIP,PORT)
-
-#initPos = NaoConnect.NaoGetAngles()
-initPos = movObj.getAngles('Body',True)
+initPos = NaoConnect.NaoGetAngles()
 for i in range(0, len(myCont)):
     myCont[i].fUpdateInitPos(initPos[i])
 
@@ -134,36 +169,9 @@ for i in range(0, len(myCont)):
 for i in range(0, len(myCont)):
     myCont[i].fUpdateLocomotionNetwork(myT,initPos[i])
 print 'Robot is ready to move..!!'
-time.sleep(1)
+time.sleep(3)
 
-legOpenAngleInit = 5
-angleCount = 0.0
-
-hip_pitch_angle = 20
-knee_pitch_angle = 30
-ankle_pitch_angle = 20
-# NaoConnect.NaoSetAngles(initPos)
-while angleCount <= 30:
-    initPos[L_KNEE_PITCH] = angleCount * math.pi / 180.0
-    initPos[R_KNEE_PITCH] = angleCount * math.pi / 180.0
-    initPos[L_ANKLE_PITCH] = -0.66*angleCount * math.pi / 180.0
-    initPos[R_ANKLE_PITCH] = -0.66*angleCount * math.pi / 180.0
-    initPos[L_HIP_PITCH] = -0.33*angleCount * math.pi / 180.0
-    initPos[R_HIP_PITCH] = -0.33*angleCount * math.pi / 180.0
-    angleCount = angleCount + 1
-    #NaoConnect.NaoSetAngles(initPos)
-    movObj.setAngles(initPos, MotorCommand , fractionMaxSpeed)
-
-    time.sleep(0.015)
-
-
-initPos[L_ANKLE_ROLL] = 0 * math.pi / 180.0
-initPos[R_ANKLE_ROLL] = 0 * math.pi / 180.0
-NaoConnect.NaoSetAngles(initPos)
-
-
-
-all_joint_tm = 0.5
+all_joint_tm = 0.15
 
 sigma_s_test = 1
 sigma_f_test = 2.5
@@ -218,26 +226,14 @@ ExtInjCurr1 = 0
 ExtInjCurr2 = 0
 ExtInjCurr3 = 0
 
-# initPos = NaoConnect.NaoGetAngles()
-initPos = movObj.getAngles('Body',True)
+initPos = NaoConnect.NaoGetAngles()
 for i in range(0, len(myCont)):
     myCont[i].fUpdateInitPos(initPos[i])
-    myCont[i].joint.joint_motor_signal = myCont[i].joint.init_motor_pos
-#print initPos
+    myCont[i].joint.joint_motor_signal =   myCont[i].joint.init_motor_pos
+print initPos
 
-# store the sensor data, used to store in json file
-#   [[R_1, R_2, R_3, R_4, R_5, R_6, R_7], [L_1, L_2, L_3, L_4, L_5, L_6, L_7]]
-sensor_data = {}
-# !!! main loop
-TextObj = ALProxy("ALTextToSpeech",NAOIP,PORT)
-TextObj.say('Ready')
 
-for I in range(0,500000):
-    index = I % 500
-    if index == 0:
-        sensor_data[index] = sensor_data
-        print('Sensor_data:', data)
-    
+for I in range(0,5000):
     startTime = time.time()
     t= I*myT.T
 
@@ -251,10 +247,25 @@ for I in range(0,500000):
     if t >= myT.T7 and t <= myT.T8:
         ExtInjCurr = 1
         ExtInjCurr1 = -1
-        #print "At ",I," current is injected"
+        print "At ",I," current is injected"
     else:
         ExtInjCurr = 0
         ExtInjCurr1 = 0
+
+
+    if I==270 :
+
+        myT.T1 = t
+        myT.T2 = myT.T1 + myT.signal_pulse_width
+
+    if t >= myT.T1 and t <= myT.T2:
+        ExtInjCurr2 = +1
+        ExtInjCurr3 = -1
+        print "At ",I," current is injected"
+    else:
+        ExtInjCurr2 = 0
+        ExtInjCurr3 = 0
+
 
 
     for ii in [R_ANKLE_ROLL, R_HIP_ROLL]:
@@ -269,6 +280,19 @@ for I in range(0,500000):
         myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr1) * myCont[
             ii].RG.E.InjCurrent_MultiplicationFactor
 
+    for ii in [L_HIP_PITCH, R_KNEE_PITCH, R_ANKLE_PITCH]:
+        myCont[ii].RG.F.InjCurrent_value = +1 * (ExtInjCurr2) * myCont[
+            ii].RG.F.InjCurrent_MultiplicationFactor
+        myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr2) * myCont[
+            ii].RG.E.InjCurrent_MultiplicationFactor
+
+    for ii in [L_KNEE_PITCH, L_ANKLE_PITCH, R_HIP_PITCH]:
+        myCont[ii].RG.F.InjCurrent_value = 1 * (ExtInjCurr3) * myCont[
+            ii].RG.F.InjCurrent_MultiplicationFactor
+        myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr3) * myCont[
+            ii].RG.E.InjCurrent_MultiplicationFactor
+
+
     for i in [R_ANKLE_ROLL, R_HIP_ROLL,L_HIP_ROLL, L_ANKLE_ROLL]:
         myCont[i].fUpdateLocomotionNetwork(myT, initPos[i])
 
@@ -278,15 +302,7 @@ for I in range(0,500000):
         MotorCommand[i]=myCont[i].joint.joint_motor_signal
 
 
-    #NaoConnect.NaoSetAngles(MotorCommand)
-    fractionMaxSpeed = 1.0
-    movObj.setAngles('Body', MotorCommand , fractionMaxSpeed)
-    #initPos = NaoConnect.NaoGetAngles()
-    initPos = movObj.getAngles('Body',True)
+    NaoConnect.NaoSetAngles(MotorCommand)
 
+    initPos = NaoConnect.NaoGetAngles()
 
-# Writing JSON data
-# with open('data.json', 'w') as f:
-#     json.dump(sensor_data, f)
-
-# TODO needs to test the code on Nao,then collect the data
