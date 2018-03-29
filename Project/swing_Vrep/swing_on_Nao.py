@@ -10,13 +10,10 @@ from MLMPCPG import *
 from NAOMotor import *
 from random import randint
 from alpha_value import *
+import NaoConnect
 
 
 
-
-file_path = "mylib\\payam\\"
-
-model = 'robot'
 # model = 'robot'
 '''
 if model == 'LArm2D':
@@ -138,6 +135,33 @@ for i in range(0, len(myCont)):
     myCont[i].fUpdateLocomotionNetwork(myT,initPos[i])
 print 'Robot is ready to move..!!'
 time.sleep(1)
+
+legOpenAngleInit = 5
+angleCount = 0.0
+
+hip_pitch_angle = 20
+knee_pitch_angle = 30
+ankle_pitch_angle = 20
+# NaoConnect.NaoSetAngles(initPos)
+while angleCount <= 30:
+    initPos[L_KNEE_PITCH] = angleCount * math.pi / 180.0
+    initPos[R_KNEE_PITCH] = angleCount * math.pi / 180.0
+    initPos[L_ANKLE_PITCH] = -0.66*angleCount * math.pi / 180.0
+    initPos[R_ANKLE_PITCH] = -0.66*angleCount * math.pi / 180.0
+    initPos[L_HIP_PITCH] = -0.33*angleCount * math.pi / 180.0
+    initPos[R_HIP_PITCH] = -0.33*angleCount * math.pi / 180.0
+    angleCount = angleCount + 1
+    #NaoConnect.NaoSetAngles(initPos)
+    movObj.setAngles(initPos, MotorCommand , fractionMaxSpeed)
+
+    time.sleep(0.015)
+
+
+initPos[L_ANKLE_ROLL] = 0 * math.pi / 180.0
+initPos[R_ANKLE_ROLL] = 0 * math.pi / 180.0
+NaoConnect.NaoSetAngles(initPos)
+
+
 
 all_joint_tm = 0.15
 

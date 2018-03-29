@@ -35,9 +35,9 @@ if NaoConnect.NaoRobotConnect.RealNaoRobot:
     NaoConnect.NaoRobotConnect.postObj.goToPosture("Stand", 0.8)
 
 initPos = NaoConnect.NaoGetAngles()
-
-# move to init position
-# initPos = numpy.ones(26)*0.00
+print('initPos num:', len(initPos))
+move to init position
+initPos = numpy.ones(26)*0.00
 initPos[L_HIP_ROLL] = 0 * math.pi / 180.0
 initPos[R_HIP_ROLL] = 0 * math.pi / 180.0
 initPos[L_ANKLE_PITCH] = 0 * math.pi / 180.0
@@ -82,8 +82,8 @@ global All_FSR, All_cur_out,All_RG_out
 global All_PF_out, All_zmp, All_alpha
 
 # sensor data transmitted from raspi
-memProxy = ALProxy("ALMemory", NAOIP, PORT)
-data = memProxy.getData("WristForceSensor")
+# memProxy = ALProxy("ALMemory", NAOIP, PORT)
+# data = memProxy.getData("WristForceSensor")
 
 
 All_Command=[]
