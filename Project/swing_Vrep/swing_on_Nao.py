@@ -163,7 +163,7 @@ NaoConnect.NaoSetAngles(initPos)
 
 
 
-all_joint_tm = 0.15
+all_joint_tm = 0.5
 
 sigma_s_test = 1
 sigma_f_test = 2.5
@@ -223,7 +223,7 @@ initPos = movObj.getAngles('Body',True)
 for i in range(0, len(myCont)):
     myCont[i].fUpdateInitPos(initPos[i])
     myCont[i].joint.joint_motor_signal = myCont[i].joint.init_motor_pos
-print initPos
+#print initPos
 
 # store the sensor data, used to store in json file
 #   [[R_1, R_2, R_3, R_4, R_5, R_6, R_7], [L_1, L_2, L_3, L_4, L_5, L_6, L_7]]
@@ -236,6 +236,7 @@ for I in range(0,500000):
     index = I % 500
     if index == 0:
         sensor_data[index] = sensor_data
+        print('Sensor_data:', data)
     
     startTime = time.time()
     t= I*myT.T
@@ -250,7 +251,7 @@ for I in range(0,500000):
     if t >= myT.T7 and t <= myT.T8:
         ExtInjCurr = 1
         ExtInjCurr1 = -1
-        print "At ",I," current is injected"
+        #print "At ",I," current is injected"
     else:
         ExtInjCurr = 0
         ExtInjCurr1 = 0
@@ -285,7 +286,7 @@ for I in range(0,500000):
 
 
 # Writing JSON data
-with open('data.json', 'w') as f:
-    json.dump(sensor_data, f)
+# with open('data.json', 'w') as f:
+#     json.dump(sensor_data, f)
 
 # TODO needs to test the code on Nao,then collect the data
