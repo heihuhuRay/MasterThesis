@@ -18,6 +18,7 @@ file_path = "mylib\\payam\\"
 
 model = 'robot'
 # model = 'robot'
+'''
 if model == 'LArm2D':
     model = 1
     from inverseKin import invKin
@@ -88,7 +89,7 @@ if model == 'LArm2D':
     initPos[L_ANKLE_ROLL] = 0 * math.pi / 180.0
     initPos[R_ANKLE_ROLL] = 0 * math.pi / 180.0
     NaoConnect.NaoSetAngles(initPos)
-
+'''
 
 number_cpg = 26
 
@@ -124,7 +125,11 @@ plusPloarity  = 1
 minusPloarity  = -1
 tempCounter = 0
 
-initPos = NaoConnect.NaoGetAngles()
+
+movObj = ALProxy("ALMotion",NAOIP,PORT)
+
+#initPos = NaoConnect.NaoGetAngles()
+initPos = movObj.getAngles('Body',True)
 for i in range(0, len(myCont)):
     myCont[i].fUpdateInitPos(initPos[i])
 
@@ -189,7 +194,8 @@ ExtInjCurr1 = 0
 ExtInjCurr2 = 0
 ExtInjCurr3 = 0
 
-initPos = NaoConnect.NaoGetAngles()
+# initPos = NaoConnect.NaoGetAngles()
+initPos = movObj.getAngles('Body',True)
 for i in range(0, len(myCont)):
     myCont[i].fUpdateInitPos(initPos[i])
     myCont[i].joint.joint_motor_signal = myCont[i].joint.init_motor_pos
@@ -199,6 +205,9 @@ print initPos
 #   [[R_1, R_2, R_3, R_4, R_5, R_6, R_7], [L_1, L_2, L_3, L_4, L_5, L_6, L_7]]
 sensor_data = {}
 # !!! main loop
+TextObj = ALProxy("ALTextToSpeech",NAOIP,PORT)
+TextObj.say('Ready')
+
 for I in range(0,500000):
     index = I % 500
     if index == 0:
@@ -244,9 +253,11 @@ for I in range(0,500000):
         MotorCommand[i]=myCont[i].joint.joint_motor_signal
 
 
-    NaoConnect.NaoSetAngles(MotorCommand)
-
-    initPos = NaoConnect.NaoGetAngles()
+    #NaoConnect.NaoSetAngles(MotorCommand)
+    fractionMaxSpeed = 1.0
+    movObj.setAngles('Body', MotorCommand , fractionMaxSpeed)
+    #initPos = NaoConnect.NaoGetAngles()
+    initPos = movObj.getAngles('Body',True)
 
 
 # Writing JSON data
