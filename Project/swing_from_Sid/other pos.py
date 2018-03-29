@@ -23,8 +23,8 @@ sys.path.append('mylib\NNET\SOM')
 sys.path.append('mylib\MotorProgramInCPG')
 
 # import motorProgramClass
-import MotorProgram_Class as motorProgramClass
-import naokinematics
+#import MotorProgram_Class as motorProgramClass
+#import naokinematics
 
 ######################################
 from SetTiming import *
