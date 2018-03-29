@@ -63,8 +63,8 @@ elif model == 'robot':
     if NaoConnect.NaoVrepConnect.NaoVrep:
         print "NaoVrep: ", NaoConnect.NaoVrepConnect.NaoVrep[0]
 
-    if NaoConnect.NaoWebotsConnect.NaoWebots:
-        print "NaoWebots: ", NaoConnect.NaoQiConnect.NaoWebots[0]
+    # if NaoConnect.NaoWebotsConnect.NaoWebots:
+    #     print "NaoWebots: ", NaoConnect.NaoQiConnect.NaoWebots[0]
 
     NAOosON = NaoConnect.NaoRobotConnect.RealNaoRobot or NaoConnect.NaoVrepConnect.NaoVrep or NaoConnect.NaoWebotsConnect.NaoWebots
 
