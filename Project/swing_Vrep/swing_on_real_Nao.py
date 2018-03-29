@@ -18,7 +18,7 @@ import sys
 
 
 # Connect to the module ALMemoryProxy
-memProxy = ALProxy("ALMemory", NAOIP, PORT)
+memProxy = ALProxy("ALMemory", 'nao.local', 9559)
 data = memProxy.getData("WristForceSensor")
 
 
@@ -179,7 +179,7 @@ for i in range(0, len(myCont)):
 print 'Robot is ready to move..!!'
 time.sleep(3)
 
-all_joint_tm = 0.15
+all_joint_tm = 0.5
 
 sigma_s_test = 1
 sigma_f_test = 2.5
@@ -240,11 +240,11 @@ for i in range(0, len(myCont)):
     myCont[i].joint.joint_motor_signal =   myCont[i].joint.init_motor_pos
 print initPos
 
-
+sensor_data = {}
 for I in range(0,500000):
     index = I % 500
     if index == 0:
-        sensor_data[index] = sensor_data
+        sensor_data[index] = data
         print('Sensor_data:', data)
 
     startTime = time.time()
