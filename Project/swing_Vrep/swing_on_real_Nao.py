@@ -14,6 +14,14 @@ from NAOMotor import *
 from random import randint
 import sys
 
+
+
+
+# Connect to the module ALMemoryProxy
+memProxy = ALProxy("ALMemory", NAOIP, PORT)
+data = memProxy.getData("WristForceSensor")
+
+
 sys.path.append('mylib/naoConnect')
 sys.path.append('mylib/MLMPCPG')
 sys.path.append('mylib/naoPlot')
@@ -233,7 +241,12 @@ for i in range(0, len(myCont)):
 print initPos
 
 
-for I in range(0,5000):
+for I in range(0,500000):
+    index = I % 500
+    if index == 0:
+        sensor_data[index] = sensor_data
+        print('Sensor_data:', data)
+
     startTime = time.time()
     t= I*myT.T
 
