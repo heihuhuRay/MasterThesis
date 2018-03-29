@@ -44,10 +44,10 @@ left_sensor = [0]*num_sensor_right
 
 
 plt.xlim(0,20)
-plt.ylim(0, 1)
+plt.ylim(-1, 1)
 plt.ion()
 y = []
-i = 0
+count = 0
 
 
 while True:
@@ -79,9 +79,9 @@ while True:
         ]
 
     temp = R_nor_data[0]
-    i += 1
+    count += 1
     y.append(temp)
-    if i>20:
-        plt.xlim(i-20,i)
+    if count > 20:
+        plt.xlim(count-20, count)
     plt.plot(y)
     plt.pause(0.005)
