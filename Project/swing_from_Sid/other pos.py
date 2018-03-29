@@ -33,8 +33,8 @@ from NAOMotor import *
 from random import randint
 from alpha_value import *
 
-import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
+#import matplotlib.pyplot as plt
+#from matplotlib.lines import Line2D
 
 #from saveObj import saveObj
 ######################################
