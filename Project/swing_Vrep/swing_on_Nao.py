@@ -97,6 +97,9 @@ global All_Sensor
 global All_FSR, All_cur_out,All_RG_out
 global All_PF_out, All_zmp, All_alpha
 
+NAOIP = "0.0.0.0"
+PORT= 9559
+
 # Connect to the module ALMemoryProxy
 memProxy = ALProxy("ALMemory", NAOIP, PORT)
 data = memProxy.getData("WristForceSensor")
