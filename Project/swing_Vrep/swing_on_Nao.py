@@ -249,3 +249,5 @@ for I in range(0,500000):
 # Writing JSON data
 with open('data.json', 'w') as f:
     json.dump(sensor_data, f)
+
+# TODO needs to test the code on Nao,then collect the data
