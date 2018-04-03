@@ -17,7 +17,7 @@ import sys
 # Connect to the module ALMemoryProxy
 memProxy = ALProxy("ALMemory", 'nao.local', 9559)
 movObj = ALProxy("ALMotion", 'nao.local', 9559)
-
+TextObj = ALProxy("ALTextToSpeech", 'nao.local', 9559)
 # define sensor
 data = memProxy.getData("WristForceSensor")
 LHandBackSensor = memProxy.getData('Device/SubDeviceList/LHand/Touch/Back/Sensor/Value')
@@ -28,8 +28,8 @@ RHandLeftSensor = memProxy.getData('Device/SubDeviceList/RHand/Touch/Left/Sensor
 RHandRightSensor = memProxy.getData('Device/SubDeviceList/RHand/Touch/Right/Sensor/Value')
 
 def release_arm_stiffness():
-    movObj.setStiffnesses('LArm', 0.1 * int( not ((LHandBackSensor == 1) or (LHandLeftSensor == 1)  or (LHandRightSensor == 1))))
-    movObj.setStiffnesses('RArm', 0.1 * int( not ((RHandBackSensor == 1) or (RHandLeftSensor == 1)  or (RHandRightSensor == 1))))
+    movObj.setStiffnesses('LArm', 0 * int( not ((LHandBackSensor == 1) or (LHandLeftSensor == 1)  or (LHandRightSensor == 1))))
+    movObj.setStiffnesses('RArm', 0 * int( not ((RHandBackSensor == 1) or (RHandLeftSensor == 1)  or (RHandRightSensor == 1))))
 
 
 
@@ -58,7 +58,7 @@ from alpha_value import *
 
 #from saveObj import saveObj
 ######################################
-file_path = "mylib\\payam\\"
+#file_path = "mylib\\payam\\"
 
 model = 'robot'
 # model = 'robot'
@@ -254,8 +254,12 @@ for i in range(0, len(myCont)):
     myCont[i].joint.joint_motor_signal =   myCont[i].joint.init_motor_pos
 #print initPos
 
+# Disable Fall Manager 
+TextObj.say('Attention, Fall Manager is Disabled.')
+movObj.setFallManagerEnabled(False) # True False
+
 sensor_data = {}
-for I in range(0,50000):
+for I in range(0,5000):
     index = I % 500
     if index == 0:
         sensor_data[index] = data
