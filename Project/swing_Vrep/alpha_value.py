@@ -14,8 +14,8 @@ alpha_HipPitch = alpha_hip_ankle_pitch
 
 alpha_AnkelPitch = alpha_hip_ankle_pitch
 
-alpha_HipRoll = 0.022
-alpha_AnkelRoll = 0.032
+# alpha_HipRoll = 0.022
+# alpha_AnkelRoll = 0.032
 
-# alpha_HipRoll = 0.2
-# alpha_AnkelRoll = 0.32
+alpha_HipRoll = 0.03
+alpha_AnkelRoll = 0.06

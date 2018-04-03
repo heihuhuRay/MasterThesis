@@ -119,9 +119,12 @@ time.sleep(0.5)
 # tm : tau_m change the spped of the action
 # the larger the tau_m is the slower the action accomplished
 all_joint_tm = 0.9
+sigma_s_test = 2
+sigma_f_test = 2
+# all_joint_tm = 0.9
+# sigma_s_test = 1
+# sigma_f_test = 2.5
 
-sigma_s_test = 1
-sigma_f_test = 2.5
 
 #Oscillatory pattern
 RG_KneePitch = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
