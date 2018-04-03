@@ -255,7 +255,7 @@ for i in range(0, len(myCont)):
 #print initPos
 
 sensor_data = {}
-for I in range(0,500000):
+for I in range(0,50000):
     index = I % 500
     if index == 0:
         sensor_data[index] = data
