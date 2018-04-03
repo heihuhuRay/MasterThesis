@@ -210,7 +210,7 @@ TextObj.say('Attention, Fall Manager is Disabled.')
 movObj.setFallManagerEnabled(False) # True False
 
 #TODO change alpha here
-change_alpha(0.03, 0.06)
+#change_alpha(0.03, 0.06)
 
 ExtInjCurr = 0
 ExtInjCurr1 = 0
@@ -227,6 +227,8 @@ sensor_data = {}
 ############################### Main Loop    ##########################################
 #######################################################################################
 for I in range(0,5000):
+    #TODO change alpha here
+    change_alpha(0.03, 0.06)
     index = I % 500
     if index == 0:
         sensor_data[index] = data
