@@ -35,7 +35,21 @@ def release_arm_stiffness():
     movObj.setStiffnesses('LArm', 0 * int( not ((LHandBackSensor == 1) or (LHandLeftSensor == 1)  or (LHandRightSensor == 1))))
     movObj.setStiffnesses('RArm', 0 * int( not ((RHandBackSensor == 1) or (RHandLeftSensor == 1)  or (RHandRightSensor == 1))))
 
+def change_alpha(alpha_AnkelRoll, alpha_HipRoll):
+    PF_AnkleRoll = PF_Patterns(alpha_AnkelRoll, 0)
+    PF_HipRoll = PF_Patterns(alpha_HipRoll, 0)
 
+    myCont[R_ANKLE_ROLL].fSetPatternRG(RG_AnkleRoll)
+    myCont[R_ANKLE_ROLL].fSetPatternPF(PF_AnkleRoll)
+
+    myCont[L_ANKLE_ROLL].fSetPatternRG(RG_AnkleRoll)
+    myCont[L_ANKLE_ROLL].fSetPatternPF(PF_AnkleRoll)
+
+    myCont[L_HIP_ROLL].fSetPatternRG(RG_HipRoll)
+    myCont[L_HIP_ROLL].fSetPatternPF(PF_HipRoll)
+
+    myCont[R_HIP_ROLL].fSetPatternRG(RG_HipRoll)
+    myCont[R_HIP_ROLL].fSetPatternPF(PF_HipRoll)
 
 
 sys.path.append('mylib/naoConnect')
@@ -196,23 +210,7 @@ TextObj.say('Attention, Fall Manager is Disabled.')
 movObj.setFallManagerEnabled(False) # True False
 
 #TODO change alpha here
-PF_AnkleRoll = PF_Patterns(alpha_AnkelRoll, 0)
-PF_HipRoll = PF_Patterns(alpha_HipRoll, 0)
-PF_HipPitch = PF_Patterns(alpha_HipPitch, 0)
-PF_AnklePitch = PF_Patterns(alpha_AnkelPitch, 0)
-PF_KneePitch = PF_Patterns(alpha_kneePitch, 0)
-
-myCont[R_ANKLE_ROLL].fSetPatternRG(RG_AnkleRoll)
-myCont[R_ANKLE_ROLL].fSetPatternPF(PF_AnkleRoll)
-
-myCont[L_ANKLE_ROLL].fSetPatternRG(RG_AnkleRoll)
-myCont[L_ANKLE_ROLL].fSetPatternPF(PF_AnkleRoll)
-
-myCont[L_HIP_ROLL].fSetPatternRG(RG_HipRoll)
-myCont[L_HIP_ROLL].fSetPatternPF(PF_HipRoll)
-
-myCont[R_HIP_ROLL].fSetPatternRG(RG_HipRoll)
-myCont[R_HIP_ROLL].fSetPatternPF(PF_HipRoll)
+change_alpha(0.03, 0.06)
 
 ExtInjCurr = 0
 ExtInjCurr1 = 0
