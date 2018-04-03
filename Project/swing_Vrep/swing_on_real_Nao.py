@@ -1,19 +1,23 @@
-
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# __date__ = 20180403
+# modified by: Ray
+import json
 import naoqi
-from naoqi import ALProxy
 import math
 import time
-
-from naoqi import ALModule
-#import matplotlib.pyplot as plt
+import sys
 import numpy as np
 
+from naoqi import ALProxy
+from naoqi import ALModule
+from alpha_value import *
 from SetTiming import *
 from MLMPCPG import *
 from NAOMotor import *
 from random import randint
-import sys
 
+store_data = []
 # Connect to the module ALMemoryProxy
 memProxy = ALProxy("ALMemory", 'nao.local', 9559)
 movObj = ALProxy("ALMotion", 'nao.local', 9559)
@@ -42,24 +46,7 @@ sys.path.append('mylib/NAOKin')
 sys.path.append('mylib\NNET\SOM')
 sys.path.append('mylib\MotorProgramInCPG')
 
-# import motorProgramClass
-#import MotorProgram_Class as motorProgramClass
-#import naokinematics
-
 ######################################
-from SetTiming import *
-from MLMPCPG import *
-from NAOMotor import *
-from random import randint
-from alpha_value import *
-
-#import matplotlib.pyplot as plt
-#from matplotlib.lines import Line2D
-
-#from saveObj import saveObj
-######################################
-#file_path = "mylib\\payam\\"
-
 model = 'robot'
 # model = 'robot'
 if model == 'LArm2D':
@@ -160,8 +147,6 @@ global All_Sensor
 global All_FSR, All_cur_out,All_RG_out
 global All_PF_out, All_zmp, All_alpha
 
-
-
 All_Command=[]
 All_Sensor=[]
 All_FSR = []
@@ -205,6 +190,12 @@ RG_AnklePitch = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
 RG_HipRoll = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
 RG_AnkleRoll = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
 
+
+# Disable Fall Manager 
+TextObj.say('Attention, Fall Manager is Disabled.')
+movObj.setFallManagerEnabled(False) # True False
+
+#TODO change alpha here
 PF_AnkleRoll = PF_Patterns(alpha_AnkelRoll, 0)
 PF_HipRoll = PF_Patterns(alpha_HipRoll, 0)
 PF_HipPitch = PF_Patterns(alpha_HipPitch, 0)
@@ -223,30 +214,8 @@ myCont[L_HIP_ROLL].fSetPatternPF(PF_HipRoll)
 myCont[R_HIP_ROLL].fSetPatternRG(RG_HipRoll)
 myCont[R_HIP_ROLL].fSetPatternPF(PF_HipRoll)
 
-myCont[R_ANKLE_PITCH].fSetPatternRG(RG_AnklePitch)
-myCont[R_ANKLE_PITCH].fSetPatternPF(PF_AnklePitch)
-
-myCont[L_ANKLE_PITCH].fSetPatternRG(RG_AnklePitch)
-myCont[L_ANKLE_PITCH].fSetPatternPF(PF_AnklePitch)
-
-myCont[L_HIP_PITCH].fSetPatternRG(RG_HipPitch)
-myCont[L_HIP_PITCH].fSetPatternPF(PF_HipPitch)
-
-myCont[R_HIP_PITCH].fSetPatternRG(RG_HipPitch)
-myCont[R_HIP_PITCH].fSetPatternPF(PF_HipPitch)
-
-myCont[L_KNEE_PITCH].fSetPatternRG(RG_KneePitch)
-myCont[L_KNEE_PITCH].fSetPatternPF(PF_KneePitch)
-
-myCont[R_KNEE_PITCH].fSetPatternRG(RG_KneePitch)
-myCont[R_KNEE_PITCH].fSetPatternPF(PF_KneePitch)
-
-
 ExtInjCurr = 0
 ExtInjCurr1 = 0
-
-ExtInjCurr2 = 0
-ExtInjCurr3 = 0
 
 initPos = NaoConnect.NaoGetAngles()
 for i in range(0, len(myCont)):
@@ -254,11 +223,11 @@ for i in range(0, len(myCont)):
     myCont[i].joint.joint_motor_signal =   myCont[i].joint.init_motor_pos
 #print initPos
 
-# Disable Fall Manager 
-TextObj.say('Attention, Fall Manager is Disabled.')
-movObj.setFallManagerEnabled(False) # True False
 
 sensor_data = {}
+#######################################################################################
+############################### Main Loop    ##########################################
+#######################################################################################
 for I in range(0,5000):
     index = I % 500
     if index == 0:
@@ -267,14 +236,11 @@ for I in range(0,5000):
 
     startTime = time.time()
     t= I*myT.T
-
     # inject positive current
-    if I == 200:
+    if I == 10:
         myT.T7 = t
         myT.T8 = myT.T7 + myT.signal_pulse_width
         tune_Ss_time_step = I +500
-
-    # if t >= myT.T7 and t <= myT.T8:
     if t >= myT.T7 and t <= myT.T8:
         ExtInjCurr = 1
         ExtInjCurr1 = -1
@@ -282,20 +248,6 @@ for I in range(0,5000):
     else:
         ExtInjCurr = 0
         ExtInjCurr1 = 0
-
-
-    if I==270 :
-
-        myT.T1 = t
-        myT.T2 = myT.T1 + myT.signal_pulse_width
-
-    if t >= myT.T1 and t <= myT.T2:
-        ExtInjCurr2 = +1
-        ExtInjCurr3 = -1
-        print "At ",I," current is injected"
-    else:
-        ExtInjCurr2 = 0
-        ExtInjCurr3 = 0
 
     release_arm_stiffness()
 
@@ -311,29 +263,13 @@ for I in range(0,5000):
         myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr1) * myCont[
             ii].RG.E.InjCurrent_MultiplicationFactor
 
-    for ii in [L_HIP_PITCH, R_KNEE_PITCH, R_ANKLE_PITCH]:
-        myCont[ii].RG.F.InjCurrent_value = +1 * (ExtInjCurr2) * myCont[
-            ii].RG.F.InjCurrent_MultiplicationFactor
-        myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr2) * myCont[
-            ii].RG.E.InjCurrent_MultiplicationFactor
-
-    for ii in [L_KNEE_PITCH, L_ANKLE_PITCH, R_HIP_PITCH]:
-        myCont[ii].RG.F.InjCurrent_value = 1 * (ExtInjCurr3) * myCont[
-            ii].RG.F.InjCurrent_MultiplicationFactor
-        myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr3) * myCont[
-            ii].RG.E.InjCurrent_MultiplicationFactor
-
-
+#TODO just update this 4 joints !!!
     for i in [R_ANKLE_ROLL, R_HIP_ROLL,L_HIP_ROLL, L_ANKLE_ROLL]:
         myCont[i].fUpdateLocomotionNetwork(myT, initPos[i])
-
-
 
     for i in range(0, len(myCont)):
         MotorCommand[i]=myCont[i].joint.joint_motor_signal
 
-
     NaoConnect.NaoSetAngles(MotorCommand)
-
     initPos = NaoConnect.NaoGetAngles()
 
