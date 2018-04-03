@@ -14,8 +14,11 @@ from NAOMotor import *
 from random import randint
 import sys
 
+movObj = ALProxy("ALMotion", 'nao.local', 9599)
 
-
+def release_arm_stiffness():
+    movObj.setStiffnesses('LArm', 0.5 * int( not ((LHandBackSensor == 1) or (LHandLeftSensor == 1)  or (LHandRightSensor == 1))))
+    movObj.setStiffnesses('RArm', 0.5 * int( not ((RHandBackSensor == 1) or (RHandLeftSensor == 1)  or (RHandRightSensor == 1))))
 
 # Connect to the module ALMemoryProxy
 memProxy = ALProxy("ALMemory", 'nao.local', 9559)
@@ -98,7 +101,7 @@ elif model == 'robot':
     NaoConnect.NaoSetAngles(initPos)
     time.sleep(2)
 
-    print initPos[L_SHOULDER_PITCH:L_WRIST_YAW + 1]
+    #print initPos[L_SHOULDER_PITCH:L_WRIST_YAW + 1]
 
     legOpenAngleInit = 5
     angleCount = 0.0
@@ -238,10 +241,11 @@ initPos = NaoConnect.NaoGetAngles()
 for i in range(0, len(myCont)):
     myCont[i].fUpdateInitPos(initPos[i])
     myCont[i].joint.joint_motor_signal =   myCont[i].joint.init_motor_pos
-print initPos
+#print initPos
 
 sensor_data = {}
 for I in range(0,500000):
+    release_arm_stiffness()
     index = I % 500
     if index == 0:
         sensor_data[index] = data
