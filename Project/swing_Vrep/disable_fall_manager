@@ -1,0 +1,19 @@
+Allow deactivation
+
+The first step is to allow deactivation of this reflex:
+
+with the web page: Consent for the deactivation of safety reflexes, or
+
+programmatically:
+
+The right of deactivation of the fall manager is managed by the ALMotion preference into the robot. (/home/nao/.config/naoqi/ALMotion.xml).
+
+So, you can edit by hand this file or use the ALPreferenceManager.
+
+The name of the preferences in ALMotion.xml is: “ENABLE_DEACTIVATION_OF_FALL_MANAGER”.
+
+And the preference file should have this form:
+
+<Preference name="ENABLE_DEACTIVATION_OF_FALL_MANAGER" description="If true the
+deactivation of Fall Manager and other critical safety reflexes is allowed"
+value="true" type="bool" />
