@@ -193,7 +193,7 @@ time.sleep(3)
 
 # tm : tau_m change the spped of the action
 # the larger the tau_m is the slower the action accomplished
-all_joint_tm = 0.3
+all_joint_tm = 0.1
 
 sigma_s_test = 1
 sigma_f_test = 2.5
