@@ -28,8 +28,8 @@ RHandLeftSensor = memProxy.getData('Device/SubDeviceList/RHand/Touch/Left/Sensor
 RHandRightSensor = memProxy.getData('Device/SubDeviceList/RHand/Touch/Right/Sensor/Value')
 
 def release_arm_stiffness():
-    movObj.setStiffnesses('LArm', 0.5 * int( not ((LHandBackSensor == 1) or (LHandLeftSensor == 1)  or (LHandRightSensor == 1))))
-    movObj.setStiffnesses('RArm', 0.5 * int( not ((RHandBackSensor == 1) or (RHandLeftSensor == 1)  or (RHandRightSensor == 1))))
+    movObj.setStiffnesses('LArm', 0.1 * int( not ((LHandBackSensor == 1) or (LHandLeftSensor == 1)  or (LHandRightSensor == 1))))
+    movObj.setStiffnesses('RArm', 0.1 * int( not ((RHandBackSensor == 1) or (RHandLeftSensor == 1)  or (RHandRightSensor == 1))))
 
 
 
@@ -254,7 +254,6 @@ for i in range(0, len(myCont)):
 
 sensor_data = {}
 for I in range(0,500000):
-    release_arm_stiffness()
     index = I % 500
     if index == 0:
         sensor_data[index] = data
@@ -292,7 +291,7 @@ for I in range(0,500000):
         ExtInjCurr2 = 0
         ExtInjCurr3 = 0
 
-
+    release_arm_stiffness()
 
     for ii in [R_ANKLE_ROLL, R_HIP_ROLL]:
         myCont[ii].RG.F.InjCurrent_value = +1 * (ExtInjCurr) * myCont[
