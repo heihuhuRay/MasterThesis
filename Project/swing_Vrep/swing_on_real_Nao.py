@@ -7,6 +7,7 @@ import naoqi
 import math
 import time
 import sys
+import random
 import numpy as np
 
 from naoqi import ALProxy
@@ -15,7 +16,7 @@ from alpha_value import *
 from SetTiming import *
 from MLMPCPG import *
 from NAOMotor import *
-from random import randint
+
 
 store_data = []
 # Connect to the module ALMemoryProxy
@@ -226,14 +227,9 @@ sensor_data = {}
 #######################################################################################
 ###############################      Main Loop    #####################################
 #######################################################################################
+release_arm_stiffness()
 for I in range(0,5000):
-    release_arm_stiffness()
-    # #TODO change alpha here
-    # change_alpha(0.03, 0.06)
-    # index = I % 500
-    # if index == 0:
-    #     sensor_data[index] = data
-    #     print('Sensor_data:', data)
+    # release_arm_stiffness()
 
     startTime = time.time()
     t= I*myT.T
@@ -251,13 +247,17 @@ for I in range(0,5000):
         ExtInjCurr1 = 0
 
     #TODO change alpha here
-    change_alpha(0.03, 0.06)
-    index = I % 500
+    index = I % 50
     if index == 0:
-        sensor_data[index] = data
-        print('Sensor_data:', data)
+        alpha_ankel = random.uniform(0, 0.15)
+        alpha_hip = random.uniform(0, 0.15)
+        change_alpha(alpha_ankel, alpha_hip)
 
+    sensor_data[index] = data
+    print('Sensor_data:', data)
     
+    
+
 
     for ii in [R_ANKLE_ROLL, R_HIP_ROLL]:
         myCont[ii].RG.F.InjCurrent_value = +1 * (ExtInjCurr) * myCont[

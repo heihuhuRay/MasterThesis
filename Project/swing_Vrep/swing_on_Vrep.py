@@ -12,9 +12,23 @@ from alpha_value import *
 from SetTiming import *
 from MLMPCPG import *
 from NAOMotor import *
-from random import randint
+import random
 
+def change_alpha(alpha_AnkelRoll, alpha_HipRoll):
+    PF_AnkleRoll = PF_Patterns(alpha_AnkelRoll, 0)
+    PF_HipRoll = PF_Patterns(alpha_HipRoll, 0)
 
+    myCont[R_ANKLE_ROLL].fSetPatternRG(RG_AnkleRoll)
+    myCont[R_ANKLE_ROLL].fSetPatternPF(PF_AnkleRoll)
+
+    myCont[L_ANKLE_ROLL].fSetPatternRG(RG_AnkleRoll)
+    myCont[L_ANKLE_ROLL].fSetPatternPF(PF_AnkleRoll)
+
+    myCont[L_HIP_ROLL].fSetPatternRG(RG_HipRoll)
+    myCont[L_HIP_ROLL].fSetPatternPF(PF_HipRoll)
+
+    myCont[R_HIP_ROLL].fSetPatternRG(RG_HipRoll)
+    myCont[R_HIP_ROLL].fSetPatternPF(PF_HipRoll)
 
 if NaoConnect.NaoRobotConnect.RealNaoRobot:
     print "RealNaoRobot: ", NaoConnect.NaoRobotConnect.RealNaoRobot[0]
@@ -140,35 +154,35 @@ PF_HipPitch = PF_Patterns(alpha_HipPitch, 0)
 PF_AnklePitch = PF_Patterns(alpha_AnkelPitch, 0)
 PF_KneePitch = PF_Patterns(alpha_kneePitch, 0)
 
-myCont[R_ANKLE_ROLL].fSetPatternRG(RG_AnkleRoll)
-myCont[R_ANKLE_ROLL].fSetPatternPF(PF_AnkleRoll)
+# myCont[R_ANKLE_ROLL].fSetPatternRG(RG_AnkleRoll)
+# myCont[R_ANKLE_ROLL].fSetPatternPF(PF_AnkleRoll)
 
-myCont[L_ANKLE_ROLL].fSetPatternRG(RG_AnkleRoll)
-myCont[L_ANKLE_ROLL].fSetPatternPF(PF_AnkleRoll)
+# myCont[L_ANKLE_ROLL].fSetPatternRG(RG_AnkleRoll)
+# myCont[L_ANKLE_ROLL].fSetPatternPF(PF_AnkleRoll)
 
-myCont[L_HIP_ROLL].fSetPatternRG(RG_HipRoll)
-myCont[L_HIP_ROLL].fSetPatternPF(PF_HipRoll)
+# myCont[L_HIP_ROLL].fSetPatternRG(RG_HipRoll)
+# myCont[L_HIP_ROLL].fSetPatternPF(PF_HipRoll)
 
-myCont[R_HIP_ROLL].fSetPatternRG(RG_HipRoll)
-myCont[R_HIP_ROLL].fSetPatternPF(PF_HipRoll)
+# myCont[R_HIP_ROLL].fSetPatternRG(RG_HipRoll)
+# myCont[R_HIP_ROLL].fSetPatternPF(PF_HipRoll)
 
-myCont[R_ANKLE_PITCH].fSetPatternRG(RG_AnklePitch)
-myCont[R_ANKLE_PITCH].fSetPatternPF(PF_AnklePitch)
+# myCont[R_ANKLE_PITCH].fSetPatternRG(RG_AnklePitch)
+# myCont[R_ANKLE_PITCH].fSetPatternPF(PF_AnklePitch)
 
-myCont[L_ANKLE_PITCH].fSetPatternRG(RG_AnklePitch)
-myCont[L_ANKLE_PITCH].fSetPatternPF(PF_AnklePitch)
+# myCont[L_ANKLE_PITCH].fSetPatternRG(RG_AnklePitch)
+# myCont[L_ANKLE_PITCH].fSetPatternPF(PF_AnklePitch)
 
-myCont[L_HIP_PITCH].fSetPatternRG(RG_HipPitch)
-myCont[L_HIP_PITCH].fSetPatternPF(PF_HipPitch)
+# myCont[L_HIP_PITCH].fSetPatternRG(RG_HipPitch)
+# myCont[L_HIP_PITCH].fSetPatternPF(PF_HipPitch)
 
-myCont[R_HIP_PITCH].fSetPatternRG(RG_HipPitch)
-myCont[R_HIP_PITCH].fSetPatternPF(PF_HipPitch)
+# myCont[R_HIP_PITCH].fSetPatternRG(RG_HipPitch)
+# myCont[R_HIP_PITCH].fSetPatternPF(PF_HipPitch)
 
-myCont[L_KNEE_PITCH].fSetPatternRG(RG_KneePitch)
-myCont[L_KNEE_PITCH].fSetPatternPF(PF_KneePitch)
+# myCont[L_KNEE_PITCH].fSetPatternRG(RG_KneePitch)
+# myCont[L_KNEE_PITCH].fSetPatternPF(PF_KneePitch)
 
-myCont[R_KNEE_PITCH].fSetPatternRG(RG_KneePitch)
-myCont[R_KNEE_PITCH].fSetPatternPF(PF_KneePitch)
+# myCont[R_KNEE_PITCH].fSetPatternRG(RG_KneePitch)
+# myCont[R_KNEE_PITCH].fSetPatternPF(PF_KneePitch)
 
 
 ExtInjCurr = 0
@@ -220,7 +234,11 @@ for I in range(0,50000): # 50000 is the running time of the action
     #     ExtInjCurr2 = 0
     #     ExtInjCurr3 = 0
 
-
+    index = I % 50
+    if index == 0:
+        alpha_ankel = random.uniform(0, 0.15)
+        alpha_hip = random.uniform(0, 0.15)
+        change_alpha(alpha_ankel, alpha_hip)
 
     for ii in [R_ANKLE_ROLL, R_HIP_ROLL]:
         myCont[ii].RG.F.InjCurrent_value = +1 * (ExtInjCurr) * myCont[
