@@ -224,15 +224,16 @@ for i in range(0, len(myCont)):
 
 sensor_data = {}
 #######################################################################################
-############################### Main Loop    ##########################################
+###############################      Main Loop    #####################################
 #######################################################################################
 for I in range(0,5000):
-    #TODO change alpha here
-    change_alpha(0.03, 0.06)
-    index = I % 500
-    if index == 0:
-        sensor_data[index] = data
-        print('Sensor_data:', data)
+    release_arm_stiffness()
+    # #TODO change alpha here
+    # change_alpha(0.03, 0.06)
+    # index = I % 500
+    # if index == 0:
+    #     sensor_data[index] = data
+    #     print('Sensor_data:', data)
 
     startTime = time.time()
     t= I*myT.T
@@ -249,7 +250,14 @@ for I in range(0,5000):
         ExtInjCurr = 0
         ExtInjCurr1 = 0
 
-    release_arm_stiffness()
+    #TODO change alpha here
+    change_alpha(0.03, 0.06)
+    index = I % 500
+    if index == 0:
+        sensor_data[index] = data
+        print('Sensor_data:', data)
+
+    
 
     for ii in [R_ANKLE_ROLL, R_HIP_ROLL]:
         myCont[ii].RG.F.InjCurrent_value = +1 * (ExtInjCurr) * myCont[
