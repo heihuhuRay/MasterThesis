@@ -24,7 +24,7 @@ memProxy = ALProxy("ALMemory", 'nao.local', 9559)
 movObj = ALProxy("ALMotion", 'nao.local', 9559)
 TextObj = ALProxy("ALTextToSpeech", 'nao.local', 9559)
 # define sensor
-data = memProxy.getData("WristForceSensor")
+wrist_sensor = memProxy.getData("WristForceSensor")
 LHandBackSensor = memProxy.getData('Device/SubDeviceList/LHand/Touch/Back/Sensor/Value')
 LHandLeftSensor = memProxy.getData('Device/SubDeviceList/LHand/Touch/Left/Sensor/Value')
 LHandRightSensor = memProxy.getData('Device/SubDeviceList/LHand/Touch/Right/Sensor/Value')
@@ -193,7 +193,7 @@ time.sleep(3)
 
 # tm : tau_m change the spped of the action
 # the larger the tau_m is the slower the action accomplished
-all_joint_tm = 0.03
+all_joint_tm = 0.3
 
 sigma_s_test = 2
 sigma_f_test = 2.5
@@ -223,7 +223,7 @@ for i in range(0, len(myCont)):
 #print initPos
 
 
-sensor_data = {}
+
 #######################################################################################
 ###############################      Main Loop    #####################################
 #######################################################################################
@@ -241,7 +241,7 @@ for I in range(0,5000):
     if t >= myT.T7 and t <= myT.T8:
         ExtInjCurr = 1
         ExtInjCurr1 = -1
-        print "At ",I," current is injected"
+        #print "At ",I," current is injected"
     else:
         ExtInjCurr = 0
         ExtInjCurr1 = 0
@@ -252,11 +252,8 @@ for I in range(0,5000):
         alpha_ankel = random.uniform(0, 0.15)
         alpha_hip = random.uniform(0, 0.15)
         change_alpha(alpha_ankel, alpha_hip)
-
-    sensor_data[index] = data
-    print('Sensor_data:', data)
-    
-    
+    store_data.append([alpha_ankel, alpha_hip, wrist_sensor])
+    print([alpha_ankel, alpha_hip, wrist_sensor])
 
 
     for ii in [R_ANKLE_ROLL, R_HIP_ROLL]:
