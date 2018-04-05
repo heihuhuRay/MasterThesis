@@ -153,8 +153,9 @@ elif model == 'robot':
     # initPos[L_HIP_PITCH] = -10 * math.pi / 180.0
     # initPos[R_HIP_PITCH] = -10 * math.pi / 180.0
     NaoConnect.NaoSetAngles(initPos)
-
-
+    print("###############################################################")
+    print("########################### mark 1 ############################")
+    print("###############################################################")
 number_cpg = 26
 
 global All_Command

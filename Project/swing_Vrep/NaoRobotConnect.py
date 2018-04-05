@@ -99,8 +99,6 @@ if NaoQi:
 ######################################################################
 
 def NaoSetAnglesRobot(angles):
-    
-    # print "NAOIP", NAOIP
     movObj.setAngles('Body',angles[0:26], fractionMaxSpeed)
     return
 ######################################################################
