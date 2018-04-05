@@ -110,7 +110,7 @@ elif model == 'robot':
     initPos[L_SHOULDER_PITCH] = 90 * math.pi / 180.0
     initPos[R_SHOULDER_PITCH] = 90 * math.pi / 180.0
     NaoConnect.NaoSetAngles(initPos)
-    time.sleep(2)
+    time.sleep(1)
 
     #print initPos[L_SHOULDER_PITCH:L_WRIST_YAW + 1]
 
@@ -206,13 +206,12 @@ RG_AnklePitch = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
 RG_HipRoll = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
 RG_AnkleRoll = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
 
-
+release_arm_stiffness()
 # Disable Fall Manager 
 TextObj.say('Attention, Fall Manager is Disabled.')
 movObj.setFallManagerEnabled(False) # True False
+time.sleep(2)
 
-#TODO change alpha here
-#change_alpha(0.03, 0.06)
 
 ExtInjCurr = 0
 ExtInjCurr1 = 0
@@ -221,17 +220,14 @@ initPos = NaoConnect.NaoGetAngles()
 for i in range(0, len(myCont)):
     myCont[i].fUpdateInitPos(initPos[i])
     myCont[i].joint.joint_motor_signal =   myCont[i].joint.init_motor_pos
-#print initPos
+
 
 
 
 #######################################################################################
 ###############################      Main Loop    #####################################
 #######################################################################################
-release_arm_stiffness()
-for I in range(0,50):
-    # release_arm_stiffness()
-
+for I in range(0,110):
     startTime = time.time()
     t= I*myT.T
     # inject positive current
@@ -256,7 +252,6 @@ for I in range(0,50):
     store_data.append([alpha_ankel, alpha_hip, wrist_sensor])
     print([alpha_ankel, alpha_hip, wrist_sensor])
 
-
     for ii in [R_ANKLE_ROLL, R_HIP_ROLL]:
         myCont[ii].RG.F.InjCurrent_value = +1 * (ExtInjCurr) * myCont[
             ii].RG.F.InjCurrent_MultiplicationFactor
@@ -269,7 +264,7 @@ for I in range(0,50):
         myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr1) * myCont[
             ii].RG.E.InjCurrent_MultiplicationFactor
 
-#TODO just update this 4 joints !!!
+    #TODO just update this 4 joints !!!
     for i in [R_ANKLE_ROLL, R_HIP_ROLL,L_HIP_ROLL, L_ANKLE_ROLL]:
         myCont[i].fUpdateLocomotionNetwork(myT, initPos[i])
 
@@ -279,3 +274,8 @@ for I in range(0,50):
     NaoConnect.NaoSetAngles(MotorCommand)
     initPos = NaoConnect.NaoGetAngles()
 
+# file_name = 'alpha_sensor_data.json'
+# with open(file_name,'w') as file_object:
+#     json.dump(store_data, file_object)
+
+numpy.save("alpha_sensor_data.npy", store_data)
