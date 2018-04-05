@@ -20,9 +20,11 @@ from NAOMotor import *
 
 store_data = []
 # Connect to the module ALMemoryProxy
-memProxy = ALProxy("ALMemory", 'nao.local', 9559)
-movObj = ALProxy("ALMotion", 'nao.local', 9559)
-TextObj = ALProxy("ALTextToSpeech", 'nao.local', 9559)
+NAOIP = "0.0.0.0"
+PORT= 9559
+memProxy = ALProxy("ALMemory", NAOIP, PORT)
+movObj = ALProxy("ALMotion", NAOIP, PORT)
+TextObj = ALProxy("ALTextToSpeech", NAOIP, PORT)
 # define sensor
 wrist_sensor = memProxy.getData("WristForceSensor")
 LHandBackSensor = memProxy.getData('Device/SubDeviceList/LHand/Touch/Back/Sensor/Value')
