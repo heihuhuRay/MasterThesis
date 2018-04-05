@@ -274,8 +274,8 @@ for I in range(0,110):
     NaoConnect.NaoSetAngles(MotorCommand)
     initPos = NaoConnect.NaoGetAngles()
 
-# file_name = 'alpha_sensor_data.json'
-# with open(file_name,'w') as file_object:
-#     json.dump(store_data, file_object)
+file_name = 'alpha_sensor_data.json'
+with open(file_name,'w') as file_object:
+    json.dump(store_data, file_object)
 
-np.save("alpha_sensor_data.npy", store_data)
+#np.save("alpha_sensor_data.npy", store_data)
