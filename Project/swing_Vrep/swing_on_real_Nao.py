@@ -7,6 +7,8 @@ import naoqi
 import math
 import time
 import sys
+import socket
+import threading
 import random
 import numpy as np
 
@@ -25,8 +27,8 @@ PORT= 9559
 memProxy = ALProxy("ALMemory", NAOIP, PORT)
 movObj = ALProxy("ALMotion", NAOIP, PORT)
 TextObj = ALProxy("ALTextToSpeech", NAOIP, PORT)
+
 # define sensor
-wrist_sensor = memProxy.getData("WristForceSensor")
 LHandBackSensor = memProxy.getData('Device/SubDeviceList/LHand/Touch/Back/Sensor/Value')
 LHandLeftSensor = memProxy.getData('Device/SubDeviceList/LHand/Touch/Left/Sensor/Value')
 LHandRightSensor = memProxy.getData('Device/SubDeviceList/LHand/Touch/Right/Sensor/Value')
@@ -231,6 +233,8 @@ for i in range(0, len(myCont)):
 ###############################      Main Loop    #####################################
 #######################################################################################
 for I in range(0, 2000):
+    # read sensor data every loop
+    wrist_sensor = memProxy.getData("WristForceSensor")
     startTime = time.time()
     t= I*myT.T
     # inject positive current
