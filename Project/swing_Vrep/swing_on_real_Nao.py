@@ -95,7 +95,7 @@ elif model == 'robot':
         sys.exit("No robot or simulation connected..!")
 
     if NaoConnect.NaoRobotConnect.RealNaoRobot:
-        NaoConnect.NaoRobotConnect.postObj.goToPosture("Stand", 0.8)
+        NaoConnect.NaoRobotConnect.postObj.goToPosture("Stand", 0.4)
 
     initPos = NaoConnect.NaoGetAngles()
 
@@ -228,7 +228,7 @@ for i in range(0, len(myCont)):
 ###############################      Main Loop    #####################################
 #######################################################################################
 release_arm_stiffness()
-for I in range(0,5000):
+for I in range(0,50):
     # release_arm_stiffness()
 
     startTime = time.time()

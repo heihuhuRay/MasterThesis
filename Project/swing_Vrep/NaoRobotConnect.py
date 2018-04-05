@@ -23,7 +23,7 @@ NAOIP = []
 PORT = []
 
 
-fractionMaxSpeed = 0.4
+fractionMaxSpeed = 0.3
 listValRead = []
 
 ######################################
