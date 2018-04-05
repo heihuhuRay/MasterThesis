@@ -1,4 +1,8 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+# __date__ = 20180405
+# modified by: Ray
+# change: comment the pinrt NAOIP 127.0.0.1
 """
 This module contains the inisialization code to connect to the real robot. It also has functions to read and set nao robot joints and also read robot sonsors. 
 It is a middlewear between the real robot and the user code. 
