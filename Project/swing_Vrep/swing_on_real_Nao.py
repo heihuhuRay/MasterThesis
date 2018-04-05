@@ -278,4 +278,4 @@ for I in range(0,110):
 # with open(file_name,'w') as file_object:
 #     json.dump(store_data, file_object)
 
-numpy.save("alpha_sensor_data.npy", store_data)
+np.save("alpha_sensor_data.npy", store_data)
