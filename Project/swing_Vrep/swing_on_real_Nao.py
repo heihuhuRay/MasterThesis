@@ -195,7 +195,7 @@ for i in range(0, len(myCont)):
     myCont[i].fUpdateLocomotionNetwork(myT,initPos[i])
 print 'Robot is ready to move..!!'
 time.sleep(3)
-
+release_arm_stiffness()
 # tm : tau_m change the spped of the action
 # the larger the tau_m is the slower the action accomplished
 all_joint_tm = 0.3
@@ -210,12 +210,12 @@ RG_AnklePitch = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
 RG_HipRoll = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
 RG_AnkleRoll = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
 
-release_arm_stiffness()
+
 # Disable Fall Manager 
-#TextObj.say('Attention, Fall Manager is Disabled.')
 TextObj.say('Please hold my wrist.')
+TextObj.say('Attention, Fall Manager is Disabled.')
 movObj.setFallManagerEnabled(False) # True False
-time.sleep(2)
+time.sleep(4)
 
 
 ExtInjCurr = 0
@@ -224,7 +224,7 @@ ExtInjCurr1 = 0
 initPos = NaoConnect.NaoGetAngles()
 for i in range(0, len(myCont)):
     myCont[i].fUpdateInitPos(initPos[i])
-    myCont[i].joint.joint_motor_signal =   myCont[i].joint.init_motor_pos
+    myCont[i].joint.joint_motor_signal = myCont[i].joint.init_motor_pos
 
 
 
@@ -251,7 +251,7 @@ for I in range(0, 2000):
         ExtInjCurr1 = 0
 
     #TODO change alpha here
-    index = I % 50
+    index = I % 200
     if index == 0:
         alpha_ankel = random.uniform(0, 0.15)
         alpha_hip = random.uniform(0, 0.15)
@@ -285,4 +285,6 @@ file_name = 'alpha_sensor_data.json'
 with open(file_name,'w') as file_object:
     json.dump(store_data, file_object)
 
+if NaoConnect.NaoRobotConnect.RealNaoRobot:
+    NaoConnect.NaoRobotConnect.postObj.goToPosture("Crouch", 0.6)
 #np.save("alpha_sensor_data.npy", store_data)

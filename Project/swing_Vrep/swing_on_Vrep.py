@@ -202,12 +202,12 @@ print initPos
 
 
 # mian loops starts here
-for I in range(0,50000): # 50000 is the running time of the action
+for I in range(0,2000): # 50000 is the running time of the action
     startTime = time.time()
     t= I*myT.T
 
     # inject positive current
-    if I == 200:
+    if I == 10:
         myT.T7 = t
         myT.T8 = myT.T7 + myT.signal_pulse_width
         tune_Ss_time_step = I +500
@@ -236,8 +236,10 @@ for I in range(0,50000): # 50000 is the running time of the action
 
     index = I % 50
     if index == 0:
-        alpha_ankel = random.uniform(0, 0.15)
-        alpha_hip = random.uniform(0, 0.15)
+        # alpha_ankel = random.uniform(0, 0.15)
+        # alpha_hip = random.uniform(0, 0.15)
+        alpha_ankel = 0.03
+        alpha_hip = 0.06
         change_alpha(alpha_ankel, alpha_hip)
 
     for ii in [R_ANKLE_ROLL, R_HIP_ROLL]:
@@ -278,3 +280,6 @@ for I in range(0,50000): # 50000 is the running time of the action
     NaoConnect.NaoSetAngles(MotorCommand)
 
     initPos = NaoConnect.NaoGetAngles()
+
+if NaoConnect.NaoRobotConnect.RealNaoRobot:
+    NaoConnect.NaoRobotConnect.postObj.goToPosture("Crouch", 0.6)
