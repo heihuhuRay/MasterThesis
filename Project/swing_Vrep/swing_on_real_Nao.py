@@ -208,7 +208,8 @@ RG_AnkleRoll = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
 
 release_arm_stiffness()
 # Disable Fall Manager 
-TextObj.say('Attention, Fall Manager is Disabled.')
+#TextObj.say('Attention, Fall Manager is Disabled.')
+TextObj.say('Please hold my wrist.')
 movObj.setFallManagerEnabled(False) # True False
 time.sleep(2)
 
@@ -227,7 +228,7 @@ for i in range(0, len(myCont)):
 #######################################################################################
 ###############################      Main Loop    #####################################
 #######################################################################################
-for I in range(0,110):
+for I in range(0, 2000):
     startTime = time.time()
     t= I*myT.T
     # inject positive current
