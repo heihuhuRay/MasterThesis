@@ -285,6 +285,9 @@ file_name = 'alpha_sensor_data.json'
 with open(file_name,'w') as file_object:
     json.dump(store_data, file_object)
 
+
+# go back to init Crouch position
+TextObj.say('please let my hands down, I need to sit.')
 if NaoConnect.NaoRobotConnect.RealNaoRobot:
     NaoConnect.NaoRobotConnect.postObj.goToPosture("Crouch", 0.6)
-#np.save("alpha_sensor_data.npy", store_data)
+movObj.setStiffnesses('Body', 0)

@@ -140,7 +140,7 @@ def NaoGetSensorsVrep():
 
     sens = [0.0]* len(NaoOrientationName)
     for  i in range(len(NaoOrientationName)):
-        (d,sens[i]) = vrep.simxGetObjectPosition(clientID, NaoOrientationHandles[i], -1,vrep.simx_opmode_oneshot)
+        (d,sens[i]) = vrep.simxGetObjectOrientation(clientID, NaoOrientationHandles[i], -1,vrep.simx_opmode_oneshot)
     [robOrient] = sens
 
     

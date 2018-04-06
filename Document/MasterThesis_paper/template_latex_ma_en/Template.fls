@@ -132,9 +132,9 @@ INPUT Template.lot
 OUTPUT Template.lot
 INPUT src/intro.tex
 INPUT src/intro.tex
+INPUT src/example_tables.tex
+INPUT src/example_tables.tex
 INPUT /usr/local/texlive/2017/texmf-dist/fonts/tfm/public/cm/cmsl12.tfm
-INPUT src/example_tables.tex
-INPUT src/example_tables.tex
 INPUT src/example_figures.tex
 INPUT src/example_figures.tex
 INPUT TU_Chemnitz_positiv_gruen.pdf
