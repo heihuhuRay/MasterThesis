@@ -23,6 +23,8 @@ num_sensor_right = 7
 right_sensor = [0]*num_sensor_left
 left_sensor = [0]*num_sensor_right
 
+left_sum = 0
+right_sum = 0
 
 while True:
     while True:
@@ -42,11 +44,21 @@ while True:
         # read the analog pin
         for i in range(0,num_sensor_left):
             right_sensor[i]  = readadcA(i)
-            print('right sensor')
-            print(right_sensor)
+            #print('right sensor')
+            #print(right_sensor)
         for i in range(0,num_sensor_right):
             left_sensor[i] = readadcB(i)
-
+            #print('left sensor')
+            #print(left_sensor)
+        #print('-------------right sensor-------------')
+        #print(right_sensor)
+        #print('+++++++++++++left sensor++++++++++++++')
+        #print(left_sensor)
+        left_sum = sum(left_sensor)
+        right_sum = sum(right_sensor)
+        total_sum = left_sum + right_sum
+        print('left_sum',left_sum,'| right_sum', right_sum, '| total',total_sum)
+        
         sock1.sendto(str([right_sensor,left_sensor]), (UDP_IP, UDP_PORT))
 
         count = count +1
