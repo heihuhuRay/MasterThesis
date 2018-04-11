@@ -5,9 +5,17 @@
 # this file is gonnna to apply Q-learning method on nao swing in Vrep
 # first the situation is simplifed into just to change 1 alpha, 2 actions 
 # alpha = 0.03 alpha = 0.06
-import sys
+
 import time
+import sim_control
+# start simulator first
+sim_control.start_sim()
+#time.sleep(2)
+
+
+import sys
 import json
+import random
 import NaoConnect
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,8 +23,9 @@ from alpha_value import *
 from SetTiming import *
 from MLMPCPG import *
 from NAOMotor import *
-import random
 
+# start simulator first
+sim_control.start_sim()
 
 def change_alpha(alpha_AnkelRoll, alpha_HipRoll):
     PF_AnkleRoll = PF_Patterns(alpha_AnkelRoll, 0)
@@ -203,7 +212,7 @@ print initPos
 
 
 alpha_ankel = 0.03
-alpha_hip = 0.06
+alpha_hip = 0.07
 change_alpha(alpha_ankel, alpha_hip)
 
 
@@ -284,12 +293,11 @@ for I in range(0,20000): # 50000 is the running time of the action
         # z_pre = AngleZ
 plt.figure('x')
 plt.plot(I_list, X_list, 'r-')
-#plt.show()
 plt.figure('y')
 plt.plot(I_list, Y_list, 'r-')
 plt.figure('z')
 plt.plot(I_list, Z_list, 'r-')
 plt.show()
 
-# go back to init Crouch position
-
+# stop the simulator
+sim_control.stop_sim()
