@@ -226,78 +226,42 @@ I_list = []
 #######################################################################################
 ###############################      Main Loop    #####################################
 #######################################################################################
-for I in range(0,20000): # 50000 is the running time of the action
-    startTime = time.time()
-    t= I*myT.T
+def swing_in_Vrep():
+    for I in range(0,20000): # 50000 is the running time of the action
+        startTime = time.time()
+        t= I*myT.T
 
-    # inject positive current
-    if I == 10:
-        myT.T7 = t
-        myT.T8 = myT.T7 + myT.signal_pulse_width
-        tune_Ss_time_step = I +500
-    if t >= myT.T7 and t <= myT.T8:
-        ExtInjCurr = 1; ExtInjCurr1 = -1
-    else:
-        ExtInjCurr = 0; ExtInjCurr1 = 0
-    index = I % 50
-    #if index == 0:
-        # alpha_ankel = random.uniform(0, 0.15)
-        # alpha_hip = random.uniform(0, 0.15)
+        # inject positive current
+        if I == 10:
+            myT.T7 = t
+            myT.T8 = myT.T7 + myT.signal_pulse_width
+            tune_Ss_time_step = I +500
+        if t >= myT.T7 and t <= myT.T8:
+            ExtInjCurr = 1; ExtInjCurr1 = -1
+        else:
+            ExtInjCurr = 0; ExtInjCurr1 = 0
+        index = I % 50
+        #if index == 0:
+            # alpha_ankel = random.uniform(0, 0.15)
+            # alpha_hip = random.uniform(0, 0.15)
 
-    for ii in [R_ANKLE_ROLL, R_HIP_ROLL]:
-        myCont[ii].RG.F.InjCurrent_value = +1 * (ExtInjCurr) * myCont[ii].RG.F.InjCurrent_MultiplicationFactor
-        myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr) * myCont[ii].RG.E.InjCurrent_MultiplicationFactor
-    for ii in [L_HIP_ROLL, L_ANKLE_ROLL]:
-        myCont[ii].RG.F.InjCurrent_value = 1 * (ExtInjCurr1) * myCont[ii].RG.F.InjCurrent_MultiplicationFactor
-        myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr1) * myCont[ii].RG.E.InjCurrent_MultiplicationFactor
+        for ii in [R_ANKLE_ROLL, R_HIP_ROLL]:
+            myCont[ii].RG.F.InjCurrent_value = +1 * (ExtInjCurr) * myCont[ii].RG.F.InjCurrent_MultiplicationFactor
+            myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr) * myCont[ii].RG.E.InjCurrent_MultiplicationFactor
+        for ii in [L_HIP_ROLL, L_ANKLE_ROLL]:
+            myCont[ii].RG.F.InjCurrent_value = 1 * (ExtInjCurr1) * myCont[ii].RG.F.InjCurrent_MultiplicationFactor
+            myCont[ii].RG.E.InjCurrent_value = -1 * (ExtInjCurr1) * myCont[ii].RG.E.InjCurrent_MultiplicationFactor
 
-    #TODO just update this 4 joints !!!
-    for i in [R_ANKLE_ROLL, R_HIP_ROLL,L_HIP_ROLL, L_ANKLE_ROLL]:
-        myCont[i].fUpdateLocomotionNetwork(myT, initPos[i])
-    for i in range(0, len(myCont)):
-        MotorCommand[i] = myCont[i].joint.joint_motor_signal
+        #TODO just update this 4 joints !!!
+        for i in [R_ANKLE_ROLL, R_HIP_ROLL,L_HIP_ROLL, L_ANKLE_ROLL]:
+            myCont[i].fUpdateLocomotionNetwork(myT, initPos[i])
+        for i in range(0, len(myCont)):
+            MotorCommand[i] = myCont[i].joint.joint_motor_signal
 
-    NaoConnect.NaoSetAngles(MotorCommand)
-    initPos = NaoConnect.NaoGetAngles()
+        NaoConnect.NaoSetAngles(MotorCommand)
+        initPos = NaoConnect.NaoGetAngles()
 
-    # get TorsoAngleX data
-    TorsoAngle = NaoConnect.NaoGetSensors()
-    #print('TorsoAngle', TorsoAngle[3])
-    #(FsrLeft, FsrRight, robPos, robOrient, HeadTouch, HandTouchLeft, HandTouchRight)
-    #0: [6.585685729980469, 8.089096069335938, 5.710831642150879, 6.968907356262207],
-    #1: [5.612579345703125, 4.861205577850342, 5.648036956787109, 4.841617584228516],
-    #2: [0.0080293919891119, 0.03088018298149109, 0.3419021964073181],
-    #3: [0.0080293919891119, 0.03088018298149109, 0.3419021964073181],
-    #4: [0, 0, 0], [0, 0, 0], [0, 0, 0]
+    # stop the simulator
+    sim_control.stop_sim()
 
-    #plt.scatter(i, y)
-    if I == 200:
-        x_pre = TorsoAngle[3][0]
-        y_pre = TorsoAngle[3][1]
-        z_pre = TorsoAngle[3][2]
-    if I > 201:
-        AngleX = TorsoAngle[3][0]
-        AngleY = TorsoAngle[3][1]
-        AngleZ = TorsoAngle[3][2]
-        X_list.append(AngleX)
-        Y_list.append(AngleY)
-        Z_list.append(AngleZ)
-        I_list.append(I)
-        # plt.plot([I-1,I], [x_pre, AngleX], 'r-')
-        # plt.plot([I-1,I], [y_pre, AngleY], 'g-')
-        # plt.plot([I-1,I], [z_pre, AngleZ], 'b-')
-        # plt.pause(0.00001)
-
-        # x_pre = AngleX
-        # y_pre = AngleY
-        # z_pre = AngleZ
-plt.figure('x')
-plt.plot(I_list, X_list, 'r-')
-plt.figure('y')
-plt.plot(I_list, Y_list, 'r-')
-plt.figure('z')
-plt.plot(I_list, Z_list, 'r-')
-plt.show()
-
-# stop the simulator
-sim_control.stop_sim()
+swing_in_Vrep()
