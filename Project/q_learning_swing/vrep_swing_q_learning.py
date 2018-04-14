@@ -8,15 +8,9 @@
 
 import time
 import sim_control
-# start simulator first
-sim_control.start_sim()
-#time.sleep(2)
-
-
 import sys
 import json
 import random
-import NaoConnect
 import numpy as np
 import matplotlib.pyplot as plt
 from alpha_value import *
@@ -24,8 +18,36 @@ from SetTiming import *
 from MLMPCPG import *
 from NAOMotor import *
 
-# start simulator first
-sim_control.start_sim()
+global All_Command
+global All_Sensor
+global All_FSR, All_cur_out,All_RG_out
+global All_PF_out, All_zmp, All_alpha
+
+All_Command=[]
+All_Sensor=[]
+All_FSR = []
+All_cur_out = []
+All_RG_out = []
+All_PF_out = []
+All_zmp = []
+All_alpha = []
+
+number_cpg = 26
+myCont = fnewMLMPcpg(number_cpg)
+myCont = fSetCPGNet(myCont,'MyNao.txt','MyNaoPsitiveAngle_E_or_F.txt')
+
+# tm : tau_m change the spped of the action
+# the larger the tau_m is the slower the action accomplished
+all_joint_tm = 0.9
+sigma_s_test = 2
+sigma_f_test = 2
+
+#Oscillatory pattern
+RG_KneePitch = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
+RG_HipPitch = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
+RG_AnklePitch = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
+RG_HipRoll = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
+RG_AnkleRoll = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
 
 def change_alpha(alpha_AnkelRoll, alpha_HipRoll):
     PF_AnkleRoll = PF_Patterns(alpha_AnkelRoll, 0)
@@ -43,191 +65,114 @@ def change_alpha(alpha_AnkelRoll, alpha_HipRoll):
     myCont[R_HIP_ROLL].fSetPatternRG(RG_HipRoll)
     myCont[R_HIP_ROLL].fSetPatternPF(PF_HipRoll)
 
-if NaoConnect.NaoRobotConnect.RealNaoRobot:
-    print "RealNaoRobot: ", NaoConnect.NaoRobotConnect.RealNaoRobot[0]
+def swing_in_Vrep(alpha_hip):
+    # start simulator first
+    sim_control.start_sim()
+    import NaoConnect
 
-if NaoConnect.NaoVrepConnect.NaoVrep:
-    print "NaoVrep: ", NaoConnect.NaoVrepConnect.NaoVrep[0]
+    if NaoConnect.NaoRobotConnect.RealNaoRobot:
+        print "RealNaoRobot: ", NaoConnect.NaoRobotConnect.RealNaoRobot[0]
 
-if NaoConnect.NaoWebotsConnect.NaoWebots:
-    print "NaoWebots: ", NaoConnect.NaoQiConnect.NaoWebots[0]
+    if NaoConnect.NaoVrepConnect.NaoVrep:
+        #print "NaoVrep: ", NaoConnect.NaoVrepConnect.NaoVrep[0]
+        pass
 
-NAOosON = NaoConnect.NaoRobotConnect.RealNaoRobot or NaoConnect.NaoVrepConnect.NaoVrep or NaoConnect.NaoWebotsConnect.NaoWebots
+    if NaoConnect.NaoWebotsConnect.NaoWebots:
+        print "NaoWebots: ", NaoConnect.NaoQiConnect.NaoWebots[0]
 
-print "NAOosON : ", NAOosON
-if NAOosON == []:
-    sys.exit("No robot or simulation connected..!")
+    NAOosON = NaoConnect.NaoRobotConnect.RealNaoRobot or NaoConnect.NaoVrepConnect.NaoVrep or NaoConnect.NaoWebotsConnect.NaoWebots
 
-if NaoConnect.NaoRobotConnect.RealNaoRobot:
-    NaoConnect.NaoRobotConnect.postObj.goToPosture("Stand", 0.8)
+    #print "NAOosON : ", NAOosON
+    if NAOosON == []:
+        sys.exit("No robot or simulation connected..!")
 
-initPos = NaoConnect.NaoGetAngles()
-print('initPos num:', len(initPos))
-#move to init position
-initPos = np.ones(26)*0.00
-initPos[L_HIP_ROLL] = 0 * math.pi / 180.0
-initPos[R_HIP_ROLL] = 0 * math.pi / 180.0
-initPos[L_ANKLE_PITCH] = 0 * math.pi / 180.0
-initPos[R_ANKLE_PITCH] = 0 * math.pi / 180.0
-initPos[R_HIP_YAW_PITCH] = 0 * math.pi / 180.0
-initPos[L_HIP_YAW_PITCH] = 0 * math.pi / 180.0
-initPos[L_SHOULDER_PITCH] = 90 * math.pi / 180.0
-initPos[R_SHOULDER_PITCH] = 90 * math.pi / 180.0
-NaoConnect.NaoSetAngles(initPos)
-time.sleep(0.5)
+    if NaoConnect.NaoRobotConnect.RealNaoRobot:
+        NaoConnect.NaoRobotConnect.postObj.goToPosture("Stand", 0.8)
 
-print initPos[L_SHOULDER_PITCH:L_WRIST_YAW + 1]
-
-legOpenAngleInit = 5
-angleCount = 0.0
-
-hip_pitch_angle = 20
-knee_pitch_angle = 30
-ankle_pitch_angle = 20
-# NaoConnect.NaoSetAngles(initPos)
-while angleCount <= 30:
-    initPos[L_KNEE_PITCH] = angleCount * math.pi / 180.0
-    initPos[R_KNEE_PITCH] = angleCount * math.pi / 180.0
-    initPos[L_ANKLE_PITCH] = -0.66*angleCount * math.pi / 180.0
-    initPos[R_ANKLE_PITCH] = -0.66*angleCount * math.pi / 180.0
-    initPos[L_HIP_PITCH] = -0.33*angleCount * math.pi / 180.0
-    initPos[R_HIP_PITCH] = -0.33*angleCount * math.pi / 180.0
-    angleCount = angleCount + 1
+    initPos = NaoConnect.NaoGetAngles()
+    #print('initPos num:', len(initPos))
+    #move to init position
+    initPos = np.ones(26)*0.00
+    initPos[L_HIP_ROLL] = 0 * math.pi / 180.0
+    initPos[R_HIP_ROLL] = 0 * math.pi / 180.0
+    initPos[L_ANKLE_PITCH] = 0 * math.pi / 180.0
+    initPos[R_ANKLE_PITCH] = 0 * math.pi / 180.0
+    initPos[R_HIP_YAW_PITCH] = 0 * math.pi / 180.0
+    initPos[L_HIP_YAW_PITCH] = 0 * math.pi / 180.0
+    initPos[L_SHOULDER_PITCH] = 90 * math.pi / 180.0
+    initPos[R_SHOULDER_PITCH] = 90 * math.pi / 180.0
     NaoConnect.NaoSetAngles(initPos)
-    time.sleep(0.015)
+    time.sleep(0.5)
 
-initPos[L_ANKLE_ROLL] = 0 * math.pi / 180.0
-initPos[R_ANKLE_ROLL] = 0 * math.pi / 180.0
+    #print initPos[L_SHOULDER_PITCH:L_WRIST_YAW + 1]
 
-NaoConnect.NaoSetAngles(initPos)
+    legOpenAngleInit = 5
+    angleCount = 0.0
 
-number_cpg = 26
+    hip_pitch_angle = 20
+    knee_pitch_angle = 30
+    ankle_pitch_angle = 20
+    # NaoConnect.NaoSetAngles(initPos)
+    while angleCount <= 30:
+        initPos[L_KNEE_PITCH] = angleCount * math.pi / 180.0
+        initPos[R_KNEE_PITCH] = angleCount * math.pi / 180.0
+        initPos[L_ANKLE_PITCH] = -0.66*angleCount * math.pi / 180.0
+        initPos[R_ANKLE_PITCH] = -0.66*angleCount * math.pi / 180.0
+        initPos[L_HIP_PITCH] = -0.33*angleCount * math.pi / 180.0
+        initPos[R_HIP_PITCH] = -0.33*angleCount * math.pi / 180.0
+        angleCount = angleCount + 1
+        NaoConnect.NaoSetAngles(initPos)
+        time.sleep(0.015)
 
-global All_Command
-global All_Sensor
-global All_FSR, All_cur_out,All_RG_out
-global All_PF_out, All_zmp, All_alpha
+    initPos[L_ANKLE_ROLL] = 0 * math.pi / 180.0
+    initPos[R_ANKLE_ROLL] = 0 * math.pi / 180.0
 
-# sensor data transmitted from raspi
-# memProxy = ALProxy("ALMemory", NAOIP, PORT)
-# data = memProxy.getData("WristForceSensor")
+    NaoConnect.NaoSetAngles(initPos)
 
+    myT = fSetTiming()
 
-All_Command=[]
-All_Sensor=[]
-All_FSR = []
-All_cur_out = []
-All_RG_out = []
-All_PF_out = []
-All_zmp = []
-All_alpha = []
+    time.sleep(0.5)
+    plusPloarity  = 1
+    minusPloarity  = -1
+    tempCounter = 0
 
-myT = fSetTiming()
-
-myCont = fnewMLMPcpg(number_cpg)
-
-myCont = fSetCPGNet(myCont,'MyNao.txt','MyNaoPsitiveAngle_E_or_F.txt')
-time.sleep(0.5)
-plusPloarity  = 1
-minusPloarity  = -1
-tempCounter = 0
-
-initPos = NaoConnect.NaoGetAngles()
-for i in range(0, len(myCont)):
-    print('i=', i)
-    myCont[i].fUpdateInitPos(initPos[i])
+    initPos = NaoConnect.NaoGetAngles()
+    for i in range(0, len(myCont)):
+        #print('i=', i)
+        myCont[i].fUpdateInitPos(initPos[i])
 
 
-for i in range(0, len(myCont)):
-    myCont[i].fUpdateLocomotionNetwork(myT,initPos[i])
-print 'Robot is ready to move..!!'
-time.sleep(0.5)
+    for i in range(0, len(myCont)):
+        myCont[i].fUpdateLocomotionNetwork(myT,initPos[i])
+    #print 'Robot is ready to move..!!'
+    time.sleep(0.5)
 
-# tm : tau_m change the spped of the action
-# the larger the tau_m is the slower the action accomplished
-all_joint_tm = 0.9
-sigma_s_test = 2
-sigma_f_test = 2
-# all_joint_tm = 0.9
-# sigma_s_test = 1
-# sigma_f_test = 2.5
+    #TODO change alpha here
+    PF_AnkleRoll = PF_Patterns(alpha_AnkelRoll, 0)
+    PF_HipRoll = PF_Patterns(alpha_HipRoll, 0)
+    PF_HipPitch = PF_Patterns(alpha_HipPitch, 0)
+    PF_AnklePitch = PF_Patterns(alpha_AnkelPitch, 0)
+    PF_KneePitch = PF_Patterns(alpha_kneePitch, 0)
 
+    ExtInjCurr = 0
+    ExtInjCurr1 = 0
+    ExtInjCurr2 = 0
+    ExtInjCurr3 = 0
 
-#Oscillatory pattern
-RG_KneePitch = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
-RG_HipPitch = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
-RG_AnklePitch = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
-RG_HipRoll = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
-RG_AnkleRoll = RG_Patterns(sigma_f_test,sigma_s_test,1,all_joint_tm)
+    initPos = NaoConnect.NaoGetAngles()
+    for i in range(0, len(myCont)):
+        myCont[i].fUpdateInitPos(initPos[i])
+        myCont[i].joint.joint_motor_signal =   myCont[i].joint.init_motor_pos
 
-#TODO change alpha here
-PF_AnkleRoll = PF_Patterns(alpha_AnkelRoll, 0)
-PF_HipRoll = PF_Patterns(alpha_HipRoll, 0)
-PF_HipPitch = PF_Patterns(alpha_HipPitch, 0)
-PF_AnklePitch = PF_Patterns(alpha_AnkelPitch, 0)
-PF_KneePitch = PF_Patterns(alpha_kneePitch, 0)
-
-# myCont[R_ANKLE_ROLL].fSetPatternRG(RG_AnkleRoll)
-# myCont[R_ANKLE_ROLL].fSetPatternPF(PF_AnkleRoll)
-
-# myCont[L_ANKLE_ROLL].fSetPatternRG(RG_AnkleRoll)
-# myCont[L_ANKLE_ROLL].fSetPatternPF(PF_AnkleRoll)
-
-# myCont[L_HIP_ROLL].fSetPatternRG(RG_HipRoll)
-# myCont[L_HIP_ROLL].fSetPatternPF(PF_HipRoll)
-
-# myCont[R_HIP_ROLL].fSetPatternRG(RG_HipRoll)
-# myCont[R_HIP_ROLL].fSetPatternPF(PF_HipRoll)
-
-# myCont[R_ANKLE_PITCH].fSetPatternRG(RG_AnklePitch)
-# myCont[R_ANKLE_PITCH].fSetPatternPF(PF_AnklePitch)
-
-# myCont[L_ANKLE_PITCH].fSetPatternRG(RG_AnklePitch)
-# myCont[L_ANKLE_PITCH].fSetPatternPF(PF_AnklePitch)
-
-# myCont[L_HIP_PITCH].fSetPatternRG(RG_HipPitch)
-# myCont[L_HIP_PITCH].fSetPatternPF(PF_HipPitch)
-
-# myCont[R_HIP_PITCH].fSetPatternRG(RG_HipPitch)
-# myCont[R_HIP_PITCH].fSetPatternPF(PF_HipPitch)
-
-# myCont[L_KNEE_PITCH].fSetPatternRG(RG_KneePitch)
-# myCont[L_KNEE_PITCH].fSetPatternPF(PF_KneePitch)
-
-# myCont[R_KNEE_PITCH].fSetPatternRG(RG_KneePitch)
-# myCont[R_KNEE_PITCH].fSetPatternPF(PF_KneePitch)
-
-
-ExtInjCurr = 0
-ExtInjCurr1 = 0
-
-ExtInjCurr2 = 0
-ExtInjCurr3 = 0
-
-initPos = NaoConnect.NaoGetAngles()
-for i in range(0, len(myCont)):
-    myCont[i].fUpdateInitPos(initPos[i])
-    myCont[i].joint.joint_motor_signal =   myCont[i].joint.init_motor_pos
-print initPos
-
-
-alpha_ankel = 0.03
-alpha_hip = 0.07
-change_alpha(alpha_ankel, alpha_hip)
-
-
-
-#plt.ion()
-X_list = []
-Y_list = []
-Z_list = []
-I_list = []
-# mian loops starts here
-#######################################################################################
-###############################      Main Loop    #####################################
-#######################################################################################
-def swing_in_Vrep():
-    for I in range(0,20000): # 50000 is the running time of the action
+    alpha_ankel = 0.03
+    # alpha_hip = 0.07
+    change_alpha(alpha_ankel, alpha_hip)
+    
+    # mian loops starts here
+    #######################################################################################
+    ###############################      Main Loop    #####################################
+    #######################################################################################
+    for I in range(0, 6000): # 50000 is the running time of the action
         startTime = time.time()
         t= I*myT.T
 
@@ -261,7 +206,9 @@ def swing_in_Vrep():
         NaoConnect.NaoSetAngles(MotorCommand)
         initPos = NaoConnect.NaoGetAngles()
 
-    # stop the simulator
+    #stop the simulator
     sim_control.stop_sim()
 
-swing_in_Vrep()
+
+
+

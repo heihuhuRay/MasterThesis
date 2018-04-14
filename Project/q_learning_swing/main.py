@@ -1,11 +1,17 @@
+# -*- coding: UTF-8 -*-
+from __future__ import print_function
+
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 # __date__ = 20180411
 # created by: Ray
+
 import sim_control
 import time
 import pandas as pd
 import numpy as np
+import random
+from vrep_swing_q_learning import swing_in_Vrep
+
 
 
 gamma = 0.9   #reward_decay=0.9
@@ -14,12 +20,15 @@ epsilon = 0.9 #e_greedy=0.9
 
 # state can be the max_angle_x, but there is a mapping between
 # state_index:   0,    1,    2,    3,    4,    5,    6 
-alpha_hip = 0
+
+# alpha_hip = 0
 state_list =  [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07]
-reward_list = [   0,    0,    1,    0,    0,    0,   -1]
+reward_list = [   0,    0,    1,    0,    0,    0,  -10]
 action_list = ['alpha_hip_increase', 'alpha_hip_reduce']
 Q_table = pd.DataFrame(np.zeros((7,2)), index=state_list, columns=action_list, dtype=np.float64)
-state_sum = len(state_list)
+#print('init Q_table', Q_table)
+state_sum = len(state_list) - 1
+print('state_sum', state_sum)
 
 def get_next_state_index(current_state_index, action):
     '''
@@ -27,23 +36,25 @@ def get_next_state_index(current_state_index, action):
             action: string
     output  next_state_index: int [0,6]
     '''
-    if action = 'alpha_hip_increase':
+    if action == 'alpha_hip_increase':
         if current_state_index <= (state_sum-1):
             next_state_index = current_state_index+1
-        if current_state_index = state_sum: # the last state
+        if current_state_index == state_sum: # the last state
             next_state_index = current_state_index
-    if action = 'alpha_hip_reduce':
-        if current_state_index >=1:
+    if action == 'alpha_hip_reduce':
+        if current_state_index >= 1:
             next_state_index = current_state_index-1
-        if current_state_index = 0:
+        if current_state_index == 0:
             next_state_index = current_state_index
     return next_state_index
 
-def execute_action(action):
+# No need to calc alpha, just check table
+def execute_action(alpha_hip, action):
     if action == 'alpha_hip_increase':
         alpha_hip += 0.01
     if action == 'alpha_hip_reduce':
         alpha_hip -= 0.01
+    return alpha_hip
 
 def choose_action(current_state):
     if np.random.uniform() < epsilon:
@@ -57,7 +68,6 @@ def choose_action(current_state):
 def update_Q_table(current_state_index, next_state_index, action, reward):
     current_state = state_list[current_state_index]
     next_state = state_list[next_state_index]
-
     q_current = Q_table.loc[current_state, action]
     
     if current_state_index != 6: # if current state is not terminal state
@@ -67,44 +77,63 @@ def update_Q_table(current_state_index, next_state_index, action, reward):
         q_new = reward  # next state is terminal
     Q_table.loc[current_state, action] += lr * (q_new - q_current)  # update
 
+def check_reward(next_state_index):
+    reward = reward_list[next_state_index]
+    if next_state_index == 6: # Nao fell down
+        if_done = True
+    if next_state_index == 2: # Nao get good result
+        if_done = True
+    else:
+        if_done = False
+    return reward, if_done
+
 def train():
+    #alpha_hip = -100
     '''run 100 experiments'''
-    for episode inrange(100):
-        ''''restart simulator'''
-        sim_control.stop_sim()
-        time.sleep(3)
-        sim_control.start_sim()
-        '''pick a random state from the state list'''
+    for episode in range(3):
+        print('------------------------------------')
+        print('-----------episode No.', episode, '-----------')
+        print('------------------------------------')
+        # pick a random state from the state list
         current_state_index = random.randint(0, state_sum)
+        print('current_state_index 1 = ', current_state_index)
         current_state = state_list[current_state_index]
+        print('current_state 1 =', current_state)
+        alpha_hip = current_state
+        print('current alpha_hip is ', alpha_hip)
         '''for each experiment'''
-        while True:
-            # choose action based on current_state
-            action = choose_action(current_state)
-            execute_action(action)
-            # take action and get next observation and reward
-            '''look up in get_next_state'''
-            next_state_index = get_next_state_index()
+        for k in range(10):
+            print('############## k =', k, '###############')
+            # 1, choose action based on current_state
+            action = choose_action(current_state )#after action, should calc state rather than alpha
+            print('采取的 action is :', action)
+
+            # 2, take action, calc next_state, and get next observation and reward
+            print('current_state_index = ', current_state_index)
+            next_state_index = get_next_state_index(current_state_index, action)
+            #TODO not run on NAO for now
+            #swing_in_Vrep(alpha_hip) # execute the new alpha_hip in Vrep
+            
+            
             '''check reward list'''
-            reward = reward_list[next_state_index]
+            #reward = reward_list[next_state_index]
+            reward, if_done = check_reward(next_state_index)
+            print('next_state_index', next_state_index)
+            print('reward', reward)
+            print('if_done', if_done)
             '''update Q-table'''
             #RL.learn(str(observation), action, reward, str(observation_))
-            update_Q_table()
-
-            # swap observation
-            observation = observation_
-
+            update_Q_table(current_state_index, next_state_index, action, reward)
+            #print('Q_table', Q_table)
+            print('next_state_index ____2', next_state_index)
+            current_state_index = next_state_index
             # break while loop when end of this episode
-            if done:
+            if if_done:
                 break
 
     # end of game
     print('game over')
-    env.destroy()
+
 
 if __name__ == "__main__":
-    env = Maze()
-    RL = QLearningTable(actions=list(range(env.n_actions)))
-
-    env.after(100, train)
-    env.mainloop()
+    train()

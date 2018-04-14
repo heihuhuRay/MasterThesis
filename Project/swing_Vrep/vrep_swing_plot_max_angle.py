@@ -24,8 +24,7 @@ from SetTiming import *
 from MLMPCPG import *
 from NAOMotor import *
 
-# start simulator first
-sim_control.start_sim()
+
 
 def change_alpha(alpha_AnkelRoll, alpha_HipRoll):
     PF_AnkleRoll = PF_Patterns(alpha_AnkelRoll, 0)
