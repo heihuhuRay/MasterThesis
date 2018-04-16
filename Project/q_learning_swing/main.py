@@ -20,11 +20,12 @@ epsilon = 0.9 #e_greedy=0.9
 
 # state can be the max_angle_x, but there is a mapping between
 # state_index:   0,    1,    2,    3,    4,    5,    6 
-
-# alpha_hip = 0
-state_list =  [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07]
-reward_list = [   0,    0,    1,    0,    0,    0,  -10]
+state_list =         [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07]
+reward_list =        [   0,    0,    1,    0,    0,    0,  -10]
+is_next_state_done = [False, False, True, False, False, False, True]
 action_list = ['alpha_hip_increase', 'alpha_hip_reduce']
+
+
 Q_table = pd.DataFrame(np.zeros((7,2)), index=state_list, columns=action_list, dtype=np.float64)
 #print('init Q_table', Q_table)
 state_sum = len(state_list) - 1
@@ -77,20 +78,17 @@ def update_Q_table(current_state_index, next_state_index, action, reward):
         q_new = reward  # next state is terminal
     Q_table.loc[current_state, action] += lr * (q_new - q_current)  # update
 
+
 def check_reward(next_state_index):
     reward = reward_list[next_state_index]
-    if next_state_index == 6: # Nao fell down
-        if_done = True
-    if next_state_index == 2: # Nao get good result
-        if_done = True
-    else:
-        if_done = False
+    if_done = is_next_state_done[next_state_index]
     return reward, if_done
 
 def train():
     #alpha_hip = -100
     '''run 100 experiments'''
-    for episode in range(3):
+    for episode in range(100):
+        print()
         print('------------------------------------')
         print('-----------episode No.', episode, '-----------')
         print('------------------------------------')
@@ -103,6 +101,7 @@ def train():
         print('current alpha_hip is ', alpha_hip)
         '''for each experiment'''
         for k in range(10):
+            print()
             print('############## k =', k, '###############')
             # 1, choose action based on current_state
             action = choose_action(current_state )#after action, should calc state rather than alpha
@@ -113,12 +112,9 @@ def train():
             next_state_index = get_next_state_index(current_state_index, action)
             #TODO not run on NAO for now
             #swing_in_Vrep(alpha_hip) # execute the new alpha_hip in Vrep
-            
-            
-            '''check reward list'''
-            #reward = reward_list[next_state_index]
+            #'''check reward list'''
+            print('  next_state_index', next_state_index)
             reward, if_done = check_reward(next_state_index)
-            print('next_state_index', next_state_index)
             print('reward', reward)
             print('if_done', if_done)
             '''update Q-table'''
