@@ -68,6 +68,7 @@ def change_alpha(alpha_AnkelRoll, alpha_HipRoll):
 def swing_in_Vrep(alpha_hip):
     # start simulator first
     sim_control.start_sim()
+    print(' !!!!!!!!!!!!!!!!! Vrep started !!!!!!!!!!!!!!!')
     import NaoConnect
 
     if NaoConnect.NaoRobotConnect.RealNaoRobot:
@@ -165,7 +166,7 @@ def swing_in_Vrep(alpha_hip):
         myCont[i].joint.joint_motor_signal =   myCont[i].joint.init_motor_pos
 
     alpha_ankel = 0.03
-    # alpha_hip = 0.07
+    #alpha_hip = 0.03
     change_alpha(alpha_ankel, alpha_hip)
     
     # mian loops starts here

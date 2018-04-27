@@ -211,7 +211,8 @@ print initPos
 
 
 alpha_ankel = 0.03
-alpha_hip = 0.07
+#alpha_hip = 0.07
+alpha_hip = 0.03
 change_alpha(alpha_ankel, alpha_hip)
 
 

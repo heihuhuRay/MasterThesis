@@ -1,0 +1,22 @@
+% Example of, how to use figures
+
+\blindtext
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.6\textwidth]{TU_Chemnitz_positiv_gruen.pdf}
+\caption{Graphic 1}
+\label{fig:pic0}
+\end{figure}
+
+\blindtext
+\blindtext
+
+\begin{figure}[h]
+    \subfigure[This is the first graphic]{\includegraphics[width=0.49\textwidth]{TU_Chemnitz_positiv_gruen.pdf} \label{fig:pic1}}
+    \subfigure[This is the secound graphic]{\includegraphics[width=0.49\textwidth]{TU_Chemnitz_positiv_gruen.pdf}\label{fig:pic2}}
+\caption{This is the caption of the whole graphic}
+\end{figure}
+
+\blindtext
+

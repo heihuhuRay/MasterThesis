@@ -1,0 +1,21 @@
+\begin{thebibliography}{1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+
+\bibitem{chen2001audiovisual}
+Chen, T.: Audiovisual speech processing. IEEE Signal Processing Magazine
+  18(1),  9--21 (2001)
+
+\bibitem{autorenrichtlinien}
+Glueck, H.I.: Autorenrichtlinien zur gi-edition lecture notes in informatics
+  (lni) (2005),
+  \url{http://www.gi-ev.de/fileadmin/redaktion/2005_LNI/LNI-Autorenrichtlinien.pdf}
+
+\bibitem{pepper1992grundlagen}
+Pepper, P.: Grundlagen der Informatik. Oldenbourg (1992)
+
+\bibitem{lnilatex}
+Tolksdorf, R.: Die lni dokumentenklasse für latex (1212),
+  \url{http://www.gi-ev.de/fileadmin/redaktion/Autorenrichtlinien/LNILaTeX-Vorlage.zip}
+
+\end{thebibliography}
