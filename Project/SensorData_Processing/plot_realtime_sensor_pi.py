@@ -60,7 +60,7 @@ while True:
     # assign sensor value to data
     data = [right_sensor, left_sensor]
 
-    R_nor_data = [  (data[0][0] - sti_R[0])/range_R[0],
+    R_sensor_data = [  (data[0][0] - sti_R[0])/range_R[0],
             (data[0][1] - sti_R[1])/range_R[1],
             (data[0][2] - sti_R[2])/range_R[2],
             (data[0][3] - sti_R[3])/range_R[3],
@@ -69,7 +69,7 @@ while True:
             (data[0][6] - sti_R[6])/range_R[6],
         ]
 
-    L_nor_data = [  (data[1][0] - sti_L[0])/range_L[0],
+    L_sensor_data = [  (data[1][0] - sti_L[0])/range_L[0],
             (data[1][1] - sti_L[1])/range_L[1],
             (data[1][2] - sti_L[2])/range_L[2],
             (data[1][3] - sti_L[3])/range_L[3],
@@ -78,7 +78,7 @@ while True:
             (data[1][6] - sti_L[6])/range_L[6],
         ]
 
-    temp = R_nor_data[0]
+    temp = R_sensor_data[0]
     print(temp)
     count += 1
     y.append(temp)
