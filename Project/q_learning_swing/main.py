@@ -4,6 +4,7 @@ from __future__ import print_function
 #!/usr/bin/env python
 # __date__ = 20180411
 # created by: Ray
+# this program should be run on your laptop, not on Pi or NAO
 
 import sim_control
 import time
@@ -124,6 +125,7 @@ def train():
             # print('alpha_hip == next_state ==', alpha_hip)
             #TODO not run on NAO for now
             #swing_in_Vrep(alpha_hip) # execute the new alpha_hip in Vrep
+            swing_on_NAO(alpha_hip)
             #time.sleep(5)
 
             # 3, check reward and if_done
