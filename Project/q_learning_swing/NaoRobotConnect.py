@@ -80,7 +80,7 @@ except:
 if NaoQi:
     
     try: 
-        NAOIP = "nao.local"
+        NAOIP = "192.168.0.110"
         PORT= 9559
         movObj = ALProxy("ALMotion",NAOIP,PORT)
         postObj = ALProxy("ALRobotPosture",NAOIP,PORT)

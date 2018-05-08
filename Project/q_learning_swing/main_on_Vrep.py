@@ -6,12 +6,24 @@ from __future__ import print_function
 # created by: Ray
 # this program should be run on your laptop, not on Pi or NAO
 
+
 import sim_control
 import time
 import pandas as pd
 import numpy as np
 import random
+from naoqi import ALProxy
 from vrep_swing_q_learning import swing_in_Vrep
+
+PORT = 9559
+robotIP = "nao.local"
+
+try:
+    memoryProxy = ALProxy("ALMemory", robotIP, PORT)
+except Exception, e:
+    print("Could not create proxy to ALMemory")
+    print("Error was: ", e)
+
 
 
 
@@ -99,7 +111,8 @@ def train():
         print('------------------------------------')
         if episode % 10 == 0:
             print('Q_table', Q_table)
-
+        data = memProxy.getData("WristForceSensor")
+        print('WristForceSensor', data)
         # pick a random state from the state list
         current_state_index = random.randint(0, state_sum)
         current_state = state_list[current_state_index]
