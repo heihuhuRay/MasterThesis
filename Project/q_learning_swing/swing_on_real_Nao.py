@@ -37,7 +37,7 @@ All_alpha = []
 
 # tm : tau_m change the spped of the action
 # the larger the tau_m is the slower the action accomplished
-all_joint_tm = 0.1
+all_joint_tm = 0.015
 
 sigma_s_test = 2
 sigma_f_test = 2.5
@@ -92,6 +92,8 @@ def change_alpha(alpha_AnkelRoll, alpha_HipRoll):
 
 
 def swing_on_Nao(alpha_hip, looptimes):
+    sum_loop_sensor = 0
+    print('alpha_hip is:', alpha_hip)
     store_data = []
     ######################################
     import NaoConnect
@@ -133,14 +135,7 @@ def swing_on_Nao(alpha_hip, looptimes):
 
     legOpenAngleInit = 5
     angleCount = 0.0
-    # while angleCount <= legOpenAngleInit:
-    #     initPos[R_HIP_PITCH] = -1 * angleCount * math.pi / 180.0
-    #     initPos[R_ANKLE_PITCH] = angleCount * math.pi / 180.0
-    #     initPos[L_HIP_PITCH] = angleCount * math.pi / 180.0
-    #     initPos[L_ANKLE_PITCH] = -1 * angleCount * math.pi / 180.0
-    #     angleCount = angleCount + 0.2
-    #     NaoConnect.NaoSetAngles(initPos)
-    #     time.sleep(0.1)
+
 
     hip_pitch_angle = 20
     knee_pitch_angle = 30
@@ -155,7 +150,7 @@ def swing_on_Nao(alpha_hip, looptimes):
         initPos[R_HIP_PITCH] = -0.33*angleCount * math.pi / 180.0
         angleCount = angleCount + 1
         NaoConnect.NaoSetAngles(initPos)
-        time.sleep(0.05)
+        #time.sleep(0.05)
 
     # initPos[L_HIP_ROLL] = -5 * math.pi / 180.0
     # initPos[R_HIP_ROLL] = 5 * math.pi / 180.0
@@ -190,14 +185,14 @@ def swing_on_Nao(alpha_hip, looptimes):
         myCont[i].fUpdateLocomotionNetwork(myT,initPos[i])
     print 'Robot is ready to move..!!'
     time.sleep(3)
-    release_arm_stiffness()
+    
 
 
-    # Disable Fall Manager 
-    TextObj.say('Please hold my wrist.')
-    TextObj.say('Attention, Fall Manager is Disabled.')
-    movObj.setFallManagerEnabled(False) # True False
-    time.sleep(4)
+    # # Disable Fall Manager 
+    # TextObj.say('Please hold my wrist.')
+    # TextObj.say('Attention, Fall Manager is Disabled.')
+    # movObj.setFallManagerEnabled(False) # True False
+    # time.sleep(4)
 
 
     ExtInjCurr = 0
@@ -211,9 +206,12 @@ def swing_on_Nao(alpha_hip, looptimes):
     #######################################################################################
     ###############################      Main Loop    #####################################
     #######################################################################################
+    TextObj.say('My current alpha hip is'+str(alpha_hip))
     for I in range(0, looptimes):
         # read sensor data every loop
         wrist_sensor = memProxy.getData("WristForceSensor")
+        sum_loop_sensor = sum(wrist_sensor[0]) + sum(wrist_sensor[1]) + sum_loop_sensor
+        #print('sum(wrist_sensor) = ', sum_loop_sensor)
         startTime = time.time()
         t= I*myT.T
         # inject positive current
@@ -238,7 +236,7 @@ def swing_on_Nao(alpha_hip, looptimes):
         alpha_hip = alpha_HipRoll
         change_alpha(alpha_ankel, alpha_hip)
         #store_data.append([alpha_ankel, alpha_hip, wrist_sensor])
-        print([alpha_ankel, alpha_hip, wrist_sensor])
+        #print([alpha_ankel, alpha_hip, wrist_sensor])
 
         for ii in [R_ANKLE_ROLL, R_HIP_ROLL]:
             myCont[ii].RG.F.InjCurrent_value = +1 * (ExtInjCurr) * myCont[
@@ -261,6 +259,8 @@ def swing_on_Nao(alpha_hip, looptimes):
 
         NaoConnect.NaoSetAngles(MotorCommand)
         initPos = NaoConnect.NaoGetAngles()
+    mean_loop_sensor = sum_loop_sensor/looptimes
+    return mean_loop_sensor
 
 
 # def main():

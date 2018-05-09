@@ -13,6 +13,7 @@ import numpy as np
 import random
 from naoqi import ALProxy
 from swing_on_real_Nao import  swing_on_Nao
+from swing_on_real_Nao import release_arm_stiffness
 
 
 PORT = 9559
@@ -20,6 +21,8 @@ robotIP = "192.168.0.110"
 
 try:
     memProxy = ALProxy("ALMemory", robotIP, PORT)
+    TextObj = ALProxy("ALTextToSpeech", robotIP, PORT)
+    movObj = ALProxy("ALMotion", robotIP, PORT)
 except Exception, e:
     print("Could not create proxy to ALMemory")
     print("Error was: ", e)
@@ -33,7 +36,7 @@ epsilon = 0.9 #e_greedy=0.9
 
 # state can be the max_angle_x, but there is a mapping between
 state_list =         [ 0.01,  0.02, 0.03,  0.04,  0.05,  0.06, 0.07]
-reward_list =        [    0,     0,    1,     0,     0,     0,  -10]
+#reward_list =        [    0,     0,    1,     0,     0,     0,  -10]
 is_next_state_done = [False, False, True, False, False, False, True]
 action_list = ['alpha_hip_increase', 'alpha_hip_reduce']
 
@@ -84,6 +87,7 @@ def choose_action(current_state):
     return action
 
 def update_Q_table(current_state_index, next_state_index, action, reward):
+    print('reward', reward)
     current_state = state_list[current_state_index]
     next_state = state_list[next_state_index]
     q_current = Q_table.loc[current_state, action]
@@ -101,24 +105,40 @@ def update_Q_table(current_state_index, next_state_index, action, reward):
 #     if_done = is_next_state_done[next_state_index]
 #     return reward, if_done
 
-def check_reward(sensor_data):
+def check_reward(next_state_index, mean_loop_sensor):
     #TODO calc the reward
-    reward = reward_list[next_state_index]
+    reward = 100 - mean_loop_sensor/100
+    #reward = reward_list[next_state_index]
     if_done = is_next_state_done[next_state_index]
     return reward, if_done
 
 def train():
     #alpha_hip = -100
+    # stand
+    import NaoConnect
+    if NaoConnect.NaoRobotConnect.RealNaoRobot:
+        print("RealNaoRobot: ", NaoConnect.NaoRobotConnect.RealNaoRobot[0])
+    NAOosON = NaoConnect.NaoRobotConnect.RealNaoRobot or NaoConnect.NaoVrepConnect.NaoVrep or NaoConnect.NaoWebotsConnect.NaoWebots
+    print("NAOosON : ", NAOosON)
+    if NAOosON == []:
+        sys.exit("No robot or simulation connected..!")
+    if NaoConnect.NaoRobotConnect.RealNaoRobot:
+        NaoConnect.NaoRobotConnect.postObj.goToPosture("Stand", 0.6)
+    # Disable Fall Manager
+    release_arm_stiffness() 
+    TextObj.say('Please hold my wrist.')
+    TextObj.say('Attention, Fall Manager is Disabled.')
+    movObj.setFallManagerEnabled(False) # True False
+    time.sleep(4)
     '''run 100 experiments'''
-    for episode in range(100):
+    for episode in range(10):
         print()
         print('------------------------------------')
         print('-----------episode No.', episode, '-----------')
         print('------------------------------------')
-        if episode % 10 == 0:
-            print('Q_table', Q_table)
-        sensor_data = memProxy.getData("WristForceSensor")
-        print('WristForceSensor', sensor_data)
+        print('Q_table', Q_table)
+        # sensor_data = memProxy.getData("WristForceSensor")
+        # print('WristForceSensor', sensor_data)
         # pick a random state from the state list
         current_state_index = random.randint(0, state_sum)
         current_state = state_list[current_state_index]
@@ -144,12 +164,13 @@ def train():
             # print('alpha_hip == next_state ==', alpha_hip)
             #TODO not run on NAO for now
             #swing_in_Vrep(alpha_hip) # execute the new alpha_hip in Vrep
-            swing_on_Nao(alpha_hip, 1000)
+            mean_loop_sensor = swing_on_Nao(alpha_hip, 250)
+            print('mean_loop_sensor', mean_loop_sensor)
             #time.sleep(5)
 
             # 3, check reward and if_done
             #print('  next_state_index =  ', next_state_index)
-            reward, if_done = check_reward(sensor_data)
+            reward, if_done = check_reward(next_state_index, mean_loop_sensor)
             print('reward', reward)
             print('if_done', if_done)
 
@@ -164,6 +185,7 @@ def train():
 
     # end of game
     print('game over')
+    
 
 
 if __name__ == "__main__":
