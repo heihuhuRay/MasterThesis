@@ -92,6 +92,7 @@ def change_alpha(alpha_AnkelRoll, alpha_HipRoll):
 
 
 def swing_on_Nao(alpha_hip, looptimes):
+    release_arm_stiffness()
     sum_loop_sensor = 0
     print('alpha_hip is:', alpha_hip)
     store_data = []
@@ -112,9 +113,13 @@ def swing_on_Nao(alpha_hip, looptimes):
     print "NAOosON : ", NAOosON
     if NAOosON == []:
         sys.exit("No robot or simulation connected..!")
-
-    if NaoConnect.NaoRobotConnect.RealNaoRobot:
-        NaoConnect.NaoRobotConnect.postObj.goToPosture("Stand", 0.6)
+    TextObj.say('please let go my arm,and hold my body')
+    time.sleep(4)
+    NaoConnect.NaoRobotConnect.postObj.goToPosture("Stand", 0.5)
+    release_arm_stiffness() 
+    TextObj.say('Please hold my wrist.')
+    TextObj.say('Attention, Fall Manager is Disabled.')
+    movObj.setFallManagerEnabled(False) # True False
 
     initPos = NaoConnect.NaoGetAngles()
 
@@ -185,7 +190,7 @@ def swing_on_Nao(alpha_hip, looptimes):
         myCont[i].fUpdateLocomotionNetwork(myT,initPos[i])
     print 'Robot is ready to move..!!'
     time.sleep(3)
-    
+    release_arm_stiffness()
 
 
     # # Disable Fall Manager 
