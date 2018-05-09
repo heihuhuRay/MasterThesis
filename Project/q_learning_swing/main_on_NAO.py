@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 import random
 from naoqi import ALProxy
+from swing_on_real_Nao import  swing_on_Nao
 
 
 PORT = 9559
@@ -95,7 +96,13 @@ def update_Q_table(current_state_index, next_state_index, action, reward):
     Q_table.loc[current_state, action] += lr * (reward + q_new - q_current)  # update
 
 
-def check_reward(next_state_index):
+# def check_reward(next_state_index):
+#     reward = reward_list[next_state_index]
+#     if_done = is_next_state_done[next_state_index]
+#     return reward, if_done
+
+def check_reward(sensor_data):
+    #TODO calc the reward
     reward = reward_list[next_state_index]
     if_done = is_next_state_done[next_state_index]
     return reward, if_done
@@ -110,8 +117,8 @@ def train():
         print('------------------------------------')
         if episode % 10 == 0:
             print('Q_table', Q_table)
-        data = memProxy.getData("WristForceSensor")
-        print('WristForceSensor', data)
+        sensor_data = memProxy.getData("WristForceSensor")
+        print('WristForceSensor', sensor_data)
         # pick a random state from the state list
         current_state_index = random.randint(0, state_sum)
         current_state = state_list[current_state_index]
@@ -137,12 +144,12 @@ def train():
             # print('alpha_hip == next_state ==', alpha_hip)
             #TODO not run on NAO for now
             #swing_in_Vrep(alpha_hip) # execute the new alpha_hip in Vrep
-            #swing_on_NAO(alpha_hip)
+            swing_on_Nao(alpha_hip, 1000)
             #time.sleep(5)
 
             # 3, check reward and if_done
             #print('  next_state_index =  ', next_state_index)
-            reward, if_done = check_reward(next_state_index)
+            reward, if_done = check_reward(sensor_data)
             print('reward', reward)
             print('if_done', if_done)
 

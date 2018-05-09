@@ -37,7 +37,7 @@ All_alpha = []
 
 # tm : tau_m change the spped of the action
 # the larger the tau_m is the slower the action accomplished
-all_joint_tm = 0.3
+all_joint_tm = 0.1
 
 sigma_s_test = 2
 sigma_f_test = 2.5
@@ -263,8 +263,8 @@ def swing_on_Nao(alpha_hip, looptimes):
         initPos = NaoConnect.NaoGetAngles()
 
 
-def main():
-    swing_on_Nao(0.03, 1000)
+# def main():
+#     swing_on_Nao(0.03, 1000)
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
