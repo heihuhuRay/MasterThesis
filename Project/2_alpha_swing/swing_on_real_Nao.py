@@ -91,7 +91,7 @@ def change_alpha(alpha_AnkelRoll, alpha_HipRoll):
 
 
 
-def swing_on_Nao(alpha_hip, looptimes):
+def swing_on_Nao(alpha_hip, alpha_ankel, looptimes):
     release_arm_stiffness()
     sum_loop_sensor = 0
     print('alpha_hip is:', alpha_hip)
@@ -237,8 +237,6 @@ def swing_on_Nao(alpha_hip, looptimes):
         # if index == 0:
         #     alpha_ankel = random.uniform(0, 0.15)
         #     alpha_hip = random.uniform(0, 0.15)
-        alpha_ankel = 0.03
-        alpha_hip = alpha_HipRoll
         change_alpha(alpha_ankel, alpha_hip)
         #store_data.append([alpha_ankel, alpha_hip, wrist_sensor])
         #print([alpha_ankel, alpha_hip, wrist_sensor])

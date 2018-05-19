@@ -90,11 +90,9 @@ gamma = 0.9   #reward_decay=0.9
 lr = 0.01     #learning_rate=0.01
 epsilon = 0.9 #e_greedy=0.9
 
-# state can be the max_angle_x, but there is a mapping between
-state_list =         [ 0.01,  0.02, 0.03,  0.04,  0.05,  0.06, 0.07]
-#reward_list =        [    0,     0,    1,     0,     0,     0,  -10]
-is_next_state_done = [False, False, True, False, False, False, True]
-action_list = ['alpha_hip_increase', 'alpha_hip_reduce']
+# the state is the max_angle_X
+# action_list = ['alpha_hip_roll++', 'alpha_hip_roll--', 'alpha_ankle_roll++', 'alpha_ankle_roll--']
+action_list = ['alpha_hip_pitch++', 'alpha_hip_pitch--', 'alpha_ankle_pitch++', 'alpha_ankle_pitch--']
 
 
 Q_table = pd.DataFrame(np.zeros((7,2)), index=state_list, columns=action_list, dtype=np.float64)
@@ -113,12 +111,12 @@ def get_next_state_index(current_state_index, action):
         # because in this situation, the q_value should update
         raise('Error: current_state is terminal state, check input source')
     else:
-        if action == 'alpha_hip_increase':
+        if action == 'alpha_hip++':
             if current_state_index <= (state_sum-1):
                 next_state_index = current_state_index+1
             if current_state_index == state_sum: # the last state
                 next_state_index = current_state_index
-        if action == 'alpha_hip_reduce':
+        if action == 'alpha_hip--':
             if current_state_index >= 1:
                 next_state_index = current_state_index-1
             if current_state_index == 0:
@@ -127,9 +125,9 @@ def get_next_state_index(current_state_index, action):
 
 # No need to calc alpha, just check table
 def execute_action(alpha_hip, action):
-    if action == 'alpha_hip_increase':
+    if action == 'alpha_hip++':
         alpha_hip += 0.01
-    if action == 'alpha_hip_reduce':
+    if action == 'alpha_hip--':
         alpha_hip -= 0.01
     return alpha_hip
 
