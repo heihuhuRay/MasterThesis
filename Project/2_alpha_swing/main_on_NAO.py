@@ -91,8 +91,10 @@ lr = 0.01     #learning_rate=0.01
 epsilon = 0.9 #e_greedy=0.9
 
 # the state is the max_angle_X
-# action_list = ['alpha_hip_roll++', 'alpha_hip_roll--', 'alpha_ankle_roll++', 'alpha_ankle_roll--']
-action_list = ['alpha_hip_pitch++', 'alpha_hip_pitch--', 'alpha_ankle_pitch++', 'alpha_ankle_pitch--']
+action_list = [ 'alpha_hip_roll++', 'alpha_hip_roll--', 'alpha_ankle_roll++', 'alpha_ankle_roll--', 
+                'alpha_hip_pitch++', 'alpha_hip_pitch--', 'alpha_ankle_pitch++', 'alpha_ankle_pitch--']
+# seperate the roll parameters and pitch parameters
+#action_list = ['alpha_hip_pitch++', 'alpha_hip_pitch--', 'alpha_ankle_pitch++', 'alpha_ankle_pitch--']
 
 
 Q_table = pd.DataFrame(np.zeros((7,2)), index=state_list, columns=action_list, dtype=np.float64)
