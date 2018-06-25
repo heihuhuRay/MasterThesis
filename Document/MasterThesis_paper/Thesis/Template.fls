@@ -103,9 +103,7 @@ OUTPUT Template.pdf
 INPUT ./Template.out
 INPUT ./Template.out
 OUTPUT Template.out
-INPUT TU_Chemnitz_positiv_gruen.pdf
-INPUT ./TU_Chemnitz_positiv_gruen.pdf
-INPUT ./TU_Chemnitz_positiv_gruen.pdf
+INPUT /usr/local/texlive/2017/texmf-dist/fonts/tfm/public/cm/cmtt12.tfm
 INPUT /usr/local/texlive/2017/texmf-dist/fonts/tfm/public/cm/cmr17.tfm
 INPUT /usr/local/texlive/2017/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm
 INPUT /usr/local/texlive/2017/texmf-dist/fonts/tfm/public/cm/cmr17.tfm
@@ -144,7 +142,6 @@ INPUT chapters/Implementation.tex
 INPUT Template.bbl
 INPUT Template.bbl
 INPUT /usr/local/texlive/2017/texmf-dist/fonts/tfm/public/cm/cmsl12.tfm
-INPUT /usr/local/texlive/2017/texmf-dist/fonts/tfm/public/cm/cmtt12.tfm
 INPUT Template.aux
 INPUT ./Template.out
 INPUT ./Template.out
