@@ -10,7 +10,7 @@ import time
 import sim_control
 # start simulator first
 sim_control.start_sim()
-#time.sleep(2)
+time.sleep(2)
 
 
 import sys
