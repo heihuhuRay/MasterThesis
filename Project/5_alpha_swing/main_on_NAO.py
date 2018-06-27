@@ -96,8 +96,23 @@ action_list = [ 'alpha_hip_roll++', 'alpha_hip_roll--', 'alpha_ankle_roll++', 'a
 # seperate the roll parameters and pitch parameters
 #action_list = ['alpha_hip_pitch++', 'alpha_hip_pitch--', 'alpha_ankle_pitch++', 'alpha_ankle_pitch--']
 
+base_dict = {   'a_hip_roll':   0.01,
+                'a_ankle_roll': 0.01,
+                'a_hip_pitch':  0.01,
+                'a_knee_pitch': 0.01,
+            }
 
-Q_table = pd.DataFrame(np.zeros((7,2)), index=state_list, columns=action_list, dtype=np.float64)
+Q_dict = {}
+for i in range(81):
+    for a_hip_roll in [0.01, 0.02, 0.03]:
+        for a_ankle_roll in [0.01, 0.02, 0.03]:
+            for a_hip_pitch in [0.01, 0.02, 0.03]:
+                for a_knee_pitch in [0.01, 0.02, 0.03]:
+                    base_dict['a_knee_pitch'] = a_knee_pitch
+                    base_dict['a_hip_pitch'] = a_hip_pitch
+                    base_dict['a_ankle_roll'] = a_ankle_roll
+                    base_dict['a_hip_roll'] = a_hip_roll
+                    Q_dict[i] = base_dict
 #print('init Q_table', Q_table)
 state_sum = len(state_list) - 1
 print('state_sum', state_sum)
