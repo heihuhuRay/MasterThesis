@@ -38,5 +38,15 @@ for a_ankle_roll in ankle_roll_para:
                 base_dict['a_knee_pitch'] = a_knee_pitch
                 base_dict['a_ankle_roll'] = a_ankle_roll
 
+                l = [a_ankle_roll, a_knee_pitch, a_hip_roll, a_hip_pitch]
+                num = alpha_groups_to_state_index(l, single_alpha_options)
                 state_dict[num] = base_dict
-                
+
+num_state = len(state_dict.keys())
+index_list = state_dict.keys()
+
+hip_roll_Q_table   = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['hip_roll++',  'hip_roll--'], dtype=np.float64)
+hip_pitch_Q_table  = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['hip_pitch++', 'hip_pitch--'], dtype=np.float64)
+ankle_roll_Q_table = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['ankle_roll++','ankle_roll--'], dtype=np.float64)
+knee_pitch_Q_table = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['knee_pitch++','knee_pitch--'], dtype=np.float64)
+

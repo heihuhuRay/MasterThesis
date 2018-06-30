@@ -19,6 +19,7 @@ from MLMPCPG import *
 from naoqi import ALProxy
 from swing_on_real_Nao import  swing_on_Nao
 from swing_on_real_Nao import release_arm_stiffness
+from q_learning_data_structure import *
 
 #########################################################
 number_cpg = 26
@@ -97,8 +98,7 @@ action_list = [ 'alpha_hip_roll++', 'alpha_hip_roll--', 'alpha_ankle_roll++', 'a
 #action_list = ['alpha_hip_pitch++', 'alpha_hip_pitch--', 'alpha_ankle_pitch++', 'alpha_ankle_pitch--']
 
 
-state_sum = len(state_list) - 1
-print('state_sum', state_sum)
+
 
 def get_next_state_index(current_state_index, action):
     '''
@@ -243,8 +243,10 @@ def train():
         print('-----------episode No.', episode, '-----------')
         print('------------------------------------')
         print('Q_table', Q_table)
-        # sensor_data = memProxy.getData("WristForceSensor")
-        # print('WristForceSensor', sensor_data)
+
+        sensor_data = memProxy.getData("WristForceSensor")
+        print('WristForceSensor first print', sensor_data)
+
         # pick a random state from the state list
         current_state_index = random.randint(0, state_sum)
         current_state = state_list[current_state_index]
@@ -258,8 +260,11 @@ def train():
             # because in this situation, the q_value should update
             # find a method to evaluate the boundry condition, like the robot fall down or not
             # maybe use the sensor value, if it exceeds a threshold
+            # compare the 2 sensor data, 
+            print('WristForceSensor 2nd print', sensor_data)
+
             if (current_state_index == 0) or (current_state_index == 6):
-                
+
                 break
             print()
             print('############## k =', k, '###############')
