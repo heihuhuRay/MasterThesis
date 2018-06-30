@@ -1,5 +1,5 @@
 [^_^]: # (for SensorData_Processing)
-来源：慕课网
+
 ## 说明
 ### --readADCMultiMCPDriver.py
     将raspi上GPIO口的数据读出来，值域范围，1～1024（2的10次方）
