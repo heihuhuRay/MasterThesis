@@ -96,24 +96,7 @@ action_list = [ 'alpha_hip_roll++', 'alpha_hip_roll--', 'alpha_ankle_roll++', 'a
 # seperate the roll parameters and pitch parameters
 #action_list = ['alpha_hip_pitch++', 'alpha_hip_pitch--', 'alpha_ankle_pitch++', 'alpha_ankle_pitch--']
 
-base_dict = {   'a_hip_roll':   0.01,
-                'a_ankle_roll': 0.01,
-                'a_hip_pitch':  0.01,
-                'a_knee_pitch': 0.01,
-            }
 
-Q_dict = {}
-for i in range(81):
-    for a_hip_roll in [0.01, 0.02, 0.03]:
-        for a_ankle_roll in [0.01, 0.02, 0.03]:
-            for a_hip_pitch in [0.01, 0.02, 0.03]:
-                for a_knee_pitch in [0.01, 0.02, 0.03]:
-                    base_dict['a_knee_pitch'] = a_knee_pitch
-                    base_dict['a_hip_pitch'] = a_hip_pitch
-                    base_dict['a_ankle_roll'] = a_ankle_roll
-                    base_dict['a_hip_roll'] = a_hip_roll
-                    Q_dict[i] = base_dict
-#print('init Q_table', Q_table)
 state_sum = len(state_list) - 1
 print('state_sum', state_sum)
 
@@ -232,18 +215,19 @@ def train():
         NaoConnect.NaoSetAngles(initPos)
         #time.sleep(0.05)
 
-    # initPos[L_HIP_ROLL] = -5 * math.pi / 180.0
-    # initPos[R_HIP_ROLL] = 5 * math.pi / 180.0
+    initPos[L_HIP_ROLL] = -5 * math.pi / 180.0
+    initPos[R_HIP_ROLL] = 5 * math.pi / 180.0
 
     initPos[L_ANKLE_ROLL] = 0 * math.pi / 180.0
     initPos[R_ANKLE_ROLL] = 0 * math.pi / 180.0
 
-    # initPos[L_KNEE_PITCH] = 30 * math.pi / 180.0
-    # initPos[R_KNEE_PITCH] = 30 * math.pi / 180.0
-    # initPos[L_ANKLE_PITCH] = -20 * math.pi / 180.0
-    # initPos[R_ANKLE_PITCH] = -20 * math.pi / 180.0
-    # initPos[L_HIP_PITCH] = -10 * math.pi / 180.0
-    # initPos[R_HIP_PITCH] = -10 * math.pi / 180.0
+    initPos[L_KNEE_PITCH] = 30 * math.pi / 180.0
+    initPos[R_KNEE_PITCH] = 30 * math.pi / 180.0
+    initPos[L_ANKLE_PITCH] = -20 * math.pi / 180.0
+    initPos[R_ANKLE_PITCH] = -20 * math.pi / 180.0
+    initPos[L_HIP_PITCH] = -10 * math.pi / 180.0
+    initPos[R_HIP_PITCH] = -10 * math.pi / 180.0
+    
     NaoConnect.NaoSetAngles(initPos)
     # Disable Fall Manager
     release_arm_stiffness() 
@@ -272,7 +256,10 @@ def train():
             k += 1
             # if the random init is the terminal state, then break
             # because in this situation, the q_value should update
+            # find a method to evaluate the boundry condition, like the robot fall down or not
+            # maybe use the sensor value, if it exceeds a threshold
             if (current_state_index == 0) or (current_state_index == 6):
+                
                 break
             print()
             print('############## k =', k, '###############')
