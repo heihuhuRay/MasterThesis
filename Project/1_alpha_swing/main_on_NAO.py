@@ -37,7 +37,7 @@ All_PF_out = []
 All_zmp = []
 All_alpha = []
 
-# tm : tau_m change the spped of the action
+# tm : tau_m change the speed of the action
 # the larger the tau_m is the slower the action accomplished
 all_joint_tm = 0.015
 
