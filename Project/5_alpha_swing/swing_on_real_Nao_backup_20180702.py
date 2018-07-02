@@ -268,12 +268,38 @@ def swing_on_Nao(alpha_groups, looptimes):
     mean_loop_sensor = sum_loop_sensor/looptimes
     return mean_loop_sensor
 
-def go_to_init_pos():
+
+def main():
+    # postObj = ALProxy("ALRobotPosture",NAOIP,PORT)
+    # postObj.goToPosture('Stand',0.8)
     initPos = NaoConnect.NaoGetAngles()
 
     # move to init position
+    # initPos = numpy.ones(26)*0.00
+    '''
+    initPos[L_HIP_ROLL] = 0 * math.pi / 180.0
+    initPos[R_HIP_ROLL] = 0 * math.pi / 180.0
+    initPos[L_ANKLE_PITCH] = 0 * math.pi / 180.0
+    initPos[R_ANKLE_PITCH] = 0 * math.pi / 180.0
+    initPos[R_HIP_YAW_PITCH] = 0 * math.pi / 180.0
+    initPos[L_HIP_YAW_PITCH] = 0 * math.pi / 180.0
+    initPos[L_SHOULDER_PITCH] = 90 * math.pi / 180.0
+    initPos[R_SHOULDER_PITCH] = 90 * math.pi / 180.0
+    NaoConnect.NaoSetAngles(initPos)
+    time.sleep(1)
+    '''
+
+    #print initPos[L_SHOULDER_PITCH:L_WRIST_YAW + 1]
+
+    legOpenAngleInit = 5
     angleCount = 0.0
 
+
+    hip_pitch_angle = 20
+    knee_pitch_angle = 30
+    ankle_pitch_angle = 20
+    # NaoConnect.NaoSetAngles(initPos)
+    
     while angleCount <= 30:
         initPos[L_KNEE_PITCH] = angleCount * math.pi / 180.0
         initPos[R_KNEE_PITCH] = angleCount * math.pi / 180.0
@@ -283,14 +309,26 @@ def go_to_init_pos():
         initPos[R_HIP_PITCH] = -0.23*angleCount * math.pi / 180.0
         angleCount = angleCount + 1
         NaoConnect.NaoSetAngles(initPos)
+        #time.sleep(0.05)
+    
 
+    # initPos[L_HIP_ROLL] = -5 * math.pi / 180.0
+    # initPos[R_HIP_ROLL] = 5 * math.pi / 180.0
+
+    # initPos[L_ANKLE_ROLL] = 0 * math.pi / 180.0
+    # initPos[R_ANKLE_ROLL] = 0 * math.pi / 180.0
+    # initPos[L_KNEE_PITCH] = 30 * math.pi / 180.0
+    # initPos[R_KNEE_PITCH] = 30 * math.pi / 180.0
+    # initPos[L_ANKLE_PITCH] = -20 * math.pi / 180.0
+    # initPos[R_ANKLE_PITCH] = -20 * math.pi / 180.0
+    # initPos[L_HIP_PITCH] = -10 * math.pi / 180.0
+    # initPos[R_HIP_PITCH] = -10 * math.pi / 180.0
     NaoConnect.NaoSetAngles(initPos)
     
     time.sleep(2)
+    #initPos = NaoConnect.NaoGetAngles()
 
-def main():
-    go_to_init_pos()
-    swing_on_Nao([0.042, 0.011, 0.02, 0.022], 400)
+    swing_on_Nao([0.042, 0.011, 0.02, 0.022], 300)
 
 if __name__ == '__main__':
     main()
