@@ -32,10 +32,10 @@ def fSetTiming():
     # T1 = 3.0e0; #sec
     # T2 = T1 + signal_pulse_width ; #sec
 
-    out.T1 = 1.0e3 #sec
+    out.T1 = 1.0 #sec
     out.T2 = out.T1 + out.signal_pulse_width  #sec
 
-    out.T3 = 2.0e3 #sec
+    out.T3 = 2.0 #sec
     out.T4 = out.T3 + out.signal_pulse_width  #sec
 
     out.T5 = 1.0e3 #sec

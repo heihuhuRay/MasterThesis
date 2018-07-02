@@ -13,6 +13,7 @@ import random
 import numpy as np
 import NaoConnect
 
+from myPloting import *
 from naoqi import ALProxy
 from naoqi import ALModule
 from alpha_value import *
@@ -21,6 +22,7 @@ from MLMPCPG import *
 from NAOMotor import *
 
 number_cpg = 26
+myT = fSetTiming()
 
 global All_Command
 global All_Sensor
@@ -38,10 +40,10 @@ All_alpha = []
 
 # tm : tau_m change the spped of the action
 # the larger the tau_m is the slower the action accomplished
-all_joint_tm = 0.015
+all_joint_tm = 0.4
 
-sigma_s_test = 2
-sigma_f_test = 2.5
+sigma_s_test = 4
+sigma_f_test = 5
 
 # Connect to the module ALMemoryProxy
 NAOIP = "192.168.0.110"
@@ -169,15 +171,19 @@ def swing_on_Nao(alpha_groups, looptimes):
     #######################################################################################
     ###############################      Main Loop    #####################################
     #######################################################################################
-    TextObj.say('My current alpha hip is'+str(alpha_hip))
+    #TextObj.say('My current alpha hip is'+str(alpha_hip))
     for I in range(0, looptimes):
         # read sensor data every loop
-        wrist_sensor = memProxy.getData("WristForceSensor")
-        sum_loop_sensor = sum(wrist_sensor[0]) + sum(wrist_sensor[1]) + sum_loop_sensor
+        #wrist_sensor = memProxy.getData("WristForceSensor")
+        #sum_loop_sensor = sum(wrist_sensor[0]) + sum(wrist_sensor[1]) + sum_loop_sensor
         #print('sum(wrist_sensor) = ', sum_loop_sensor)
-
+        print("###############################################################")
+        print("########################### mark 2 ############################")
         startTime = time.time()
         t= I*myT.T
+        print('t = ', t)
+        print('myT.T1:', myT.T1)
+        print('myT.T2:', myT.T2)
 
         # # inject positive current
         # if I == 10:
@@ -207,6 +213,8 @@ def swing_on_Nao(alpha_groups, looptimes):
         else: 
             ExtInjCurr2 = 0
 
+        print('ExtInjCurr', ExtInjCurr)
+        print('ExtInjCurr2', ExtInjCurr2)
         #if index == 0:
             # alpha_ankel = random.uniform(0, 0.15)
             # alpha_hip = random.uniform(0, 0.15)
@@ -235,12 +243,24 @@ def swing_on_Nao(alpha_groups, looptimes):
         NaoConnect.NaoSetAngles(MotorCommand)
         initPos = NaoConnect.NaoGetAngles()
 
+    fPlotJointCommandSensor(All_Command,All_Sensor,L_HIP_ROLL,'L_HIP_ROLL')
+    fPlotJointCommandSensor(All_Command,All_Sensor,L_ANKLE_ROLL,'L_ANKLE_ROLL')
+    fPlotJointCommandSensor(All_Command,All_Sensor,R_HIP_ROLL,'R_HIP_ROLL')
+    fPlotJointCommandSensor(All_Command,All_Sensor,R_ANKLE_ROLL,'R_ANKLE_ROLL')
+    fPlotJointCommandSensor(All_Command,All_Sensor,R_HIP_PITCH,'R_HIP_PITCH')
+    fPlotJointCommandSensor(All_Command,All_Sensor,L_HIP_PITCH,'L_HIP_PITCH')
+    fPlotJointCommandSensor(All_Command,All_Sensor,L_KNEE_PITCH,'L_KNEE_PITCH')
+    fPlotJointCommandSensor(All_Command,All_Sensor,R_KNEE_PITCH,'R_KNEE_PITCH')
     mean_loop_sensor = sum_loop_sensor/looptimes
     return mean_loop_sensor
 
 
 def main():
-    swing_on_Nao([0.042, 0.011, 0.02, 0.022], 1000)
+    postObj = ALProxy("ALRobotPosture",NAOIP,PORT)
+    postObj.goToPosture('Stand',0.9)
+    time.sleep(0.015)
+
+    swing_on_Nao([0.022, 0.011, 0.015, 0.012], 200)
 
 if __name__ == '__main__':
     main()
