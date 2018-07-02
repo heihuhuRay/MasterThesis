@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from __future__ import print_function
-
+from decimal import Decimal
 #!/usr/bin/env python
 # __date__ = 20180411
 # created by: Ray
@@ -87,35 +87,6 @@ except Exception, e:
 
 
 
-gamma = 0.9   #reward_decay=0.9
-lr = 0.01     #learning_rate=0.01
-epsilon = 0.9 #e_greedy=0.9
-
-# the state is the max_angle_X
-action_list = [ 'alpha_hip_roll++', 'alpha_hip_roll--', 'alpha_ankle_roll++', 'alpha_ankle_roll--', 
-                'alpha_hip_pitch++', 'alpha_hip_pitch--', 'alpha_ankle_pitch++', 'alpha_ankle_pitch--']
-# seperate the roll parameters and pitch parameters
-#action_list = ['alpha_hip_pitch++', 'alpha_hip_pitch--', 'alpha_ankle_pitch++', 'alpha_ankle_pitch--']
-
-# 一共有多少个state是由每个joint alpha值的可选取的数量决定的
-# 这里是3^3=81个state index_list [0, 80]
-
-# No need to calc alpha, just check table
-def execute_action(alpha_hip, action):
-    if action == 'alpha_hip++':
-        alpha_hip += 0.01
-    if action == 'alpha_hip--':
-        alpha_hip -= 0.01
-    return alpha_hip
-
-def choose_action(current_state):
-    if np.random.uniform() < epsilon:
-        state_action = Q_table.loc[current_state, :]
-        state_action = state_action.reindex(np.random.permutation(state_action.index))     # some actions have same value
-        action = state_action.idxmax()  # choose best action
-    else:
-        action = np.random.choice(action_list) # choose random action from action_list
-    return action
 
 def update_Q_table(current_state_index, next_state_index, action, reward):
     print('reward', reward)
@@ -253,13 +224,13 @@ def train():
             print()
             print('############## k =', k, '###############')
             # 1, choose action based on current_state
-            action = choose_action(current_state)#after action, should calc state rather than alpha
+            action_groups = []
+            action_groups = choose_action(current_state_index)#after action, should calc state rather than alpha
 
             # 2, take action, calc next_state
             #print('current_state_index = ', current_state_index)
-            next_state_index = get_next_state_index(current_state_index, action)
+            next_state_index, new_alpha_groups = get_next_state_and_new_alpha(current_state_index, action_groups)
 
-            alpha_hip = state_list[next_state_index]
             # print('alpha_hip == next_state ==', alpha_hip)
             #TODO not run on NAO for now
             #swing_in_Vrep(alpha_hip) # execute the new alpha_hip in Vrep

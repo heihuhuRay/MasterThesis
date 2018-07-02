@@ -2,12 +2,19 @@ import pandas as pd
 import numpy as np
 import math
 import pprint
+from decimal import Decimal
 
 # Selectable range of alphas
-ankle_roll_para = [0.01, 0.02, 0.03]
-knee_pitch_para = [0.01, 0.02, 0.03]
-hip_roll_para = [0.01, 0.02, 0.03]
-hip_pitch_para = [0.01, 0.02, 0.03]
+available_alpha_para = [0.01, 0.02, 0.03]
+ankle_roll_para = available_alpha_para
+knee_pitch_para = available_alpha_para
+hip_roll_para   = available_alpha_para
+hip_pitch_para  = available_alpha_para
+
+
+gamma = 0.9   #reward_decay=0.9
+lr = 0.01     #learning_rate=0.01
+epsilon = 0.9 #e_greedy=0.9
 
 single_alpha_options = len(ankle_roll_para)
 
@@ -43,39 +50,78 @@ for a_ankle_roll in ankle_roll_para:
                 num = alpha_groups_to_state_index(l, single_alpha_options)
                 state_dict[num] = base_dict
 
+
+
+# 一共有多少个state是由每个joint alpha值的可选取的数量决定的
+# 这里是3^3=81个state index_list [0, 80]
 num_state = len(state_dict.keys())
 index_list = state_dict.keys()
 
-hip_roll_Q_table   = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['hip_roll++',  'hip_roll--'], dtype=np.float64)
-hip_pitch_Q_table  = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['hip_pitch++', 'hip_pitch--'], dtype=np.float64)
 ankle_roll_Q_table = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['ankle_roll++','ankle_roll--'], dtype=np.float64)
 knee_pitch_Q_table = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['knee_pitch++','knee_pitch--'], dtype=np.float64)
+hip_roll_Q_table   = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['hip_roll++',  'hip_roll--'], dtype=np.float64)
+hip_pitch_Q_table  = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['hip_pitch++', 'hip_pitch--'], dtype=np.float64)
+
+# action_groups: ['ankle_roll+/-', 'knee_pitch+/-', 'hip_roll+/-', 'hip_pitch+/-']
+total_Q_table = [ankle_roll_Q_table, knee_pitch_Q_table, hip_roll_Q_table, hip_pitch_Q_table]
+
+def choose_action(current_state_index, total_Q_table):
+    '''
+    input   current_state_index: [0, 1, ...., 79, 80]
+            total_Q_table: [hip_roll_Q_table, hip_pitch_Q_table, ankle_roll_Q_table, knee_pitch_Q_table]
+    output  action_groups: ['ankle_roll+/-', 'knee_pitch+/-', 'hip_roll+/-', 'hip_pitch+/-']
+    '''
+    action_groups = []
+    for q_tab in total_Q_table:
+        if np.random.uniform() < epsilon:
+            state_action = q_tab.loc[current_state_index, :]
+            state_action = state_action.reindex(np.random.permutation(state_action.index))     # some actions have same value
+            action = state_action.idxmax()  # choose best action
+            action_groups.append(action)
+        else:
+            action_list = []
+            action_list = q_tab.columns.values.tolist()
+            action = np.random.choice(action_list) # choose random action from action_list
+            action_groups.append(action)
+    return action_groups
 
 state_list = index_list
 
 end_state_index = num_state - 1
 
-def get_next_state_index(current_state_index, action_groups, alpha_groups):
+def get_next_state_and_new_alpha(current_state_index, action_groups, curr_alpha_groups):
     '''
     input   current_state_index: [0, 1, ...., 79, 80]
-            alpha_groups:  [0.02, 0.03, 0.01, 0.01]
-            [a_hip_pitch, a_hip_roll, a_knee_pitch, a_ankle_roll]
-    output  next_state_index: int [[0, 1, ...., 79, 80]
+            action_groups:       ['ankle_roll++', 'knee_pitch++', 'hip_roll--', 'hip_pitch++']
+            curr_alpha_groups:   [0.02, 0.03, 0.01, 0.01]
+                                 [a_hip_pitch, a_hip_roll, a_knee_pitch, a_ankle_roll]
+    output  next_state_index:    [0, 1, ...., 79, 80]
+            new_alpha_groups:    [0.01, 0.03, 0.01, 0.02]
     '''
-    if (current_state_index == 0) or (current_state_index == end_state_index):
-        # if the random init is the terminal state, then break
-        # because in this situation, the q_value should update
-        raise('Error: current_state is terminal state, check input source')
-    else:
-        for action in alpha_groups:
-            if action == 'alpha_hip++':
-                if current_state_index <= (state_sum-1):
-                    next_state_index = current_state_index+1
-                if current_state_index == state_sum: # the last state
-                    next_state_index = current_state_index
-            if action == 'alpha_hip--':
-                if current_state_index >= 1:
-                    next_state_index = current_state_index-1
-                if current_state_index == 0:
-                    next_state_index = current_state_index
-    return next_state_index
+    tmp_action_groups = []
+    for action in action_groups:
+        action = action[-2:]
+        tmp_action_groups.append(action)
+
+    for i in range(4):
+        if tmp_action_groups[i] == '++':
+            curr_alpha_groups[i] = float(Decimal(str(curr_alpha_groups[i])) + Decimal('0.01'))
+        if tmp_action_groups[i] == '--':
+            curr_alpha_groups[i] = float(Decimal(str(curr_alpha_groups[i])) - Decimal('0.01'))
+    print('1:', curr_alpha_groups)
+    
+    new_alpha_groups = []
+    for new_alpha in curr_alpha_groups:
+        if new_alpha > max_alpha:
+            new_alpha = max_alpha
+            new_alpha_groups.append(new_alpha)
+        elif new_alpha < min_alpha:
+            new_alpha = min_alpha
+            new_alpha_groups.append(new_alpha)
+        else:
+            new_alpha_groups.append(new_alpha)
+    print('2:', new_alpha_groups)
+    
+    next_state_index = alpha_groups_to_state_index(new_alpha_groups, single_alpha_options)
+    
+    return next_state_index, new_alpha_groups
