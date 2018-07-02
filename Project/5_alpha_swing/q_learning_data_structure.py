@@ -13,6 +13,7 @@ single_alpha_options = len(ankle_roll_para)
 
 state_dict = {}
 
+# alpha_groups = [0.02, 0.03, 0.01, 0.01]
 def alpha_groups_to_state_index(alpha_groups, single_alpha_options):
     a_0 = ankle_roll_para.index(alpha_groups[0])
     a_1 = knee_pitch_para.index(alpha_groups[1])
@@ -50,3 +51,31 @@ hip_pitch_Q_table  = pd.DataFrame(np.zeros((num_state,2)), index=index_list, col
 ankle_roll_Q_table = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['ankle_roll++','ankle_roll--'], dtype=np.float64)
 knee_pitch_Q_table = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['knee_pitch++','knee_pitch--'], dtype=np.float64)
 
+state_list = index_list
+
+end_state_index = num_state - 1
+
+def get_next_state_index(current_state_index, action_groups, alpha_groups):
+    '''
+    input   current_state_index: [0, 1, ...., 79, 80]
+            alpha_groups:  [0.02, 0.03, 0.01, 0.01]
+            [a_hip_pitch, a_hip_roll, a_knee_pitch, a_ankle_roll]
+    output  next_state_index: int [[0, 1, ...., 79, 80]
+    '''
+    if (current_state_index == 0) or (current_state_index == end_state_index):
+        # if the random init is the terminal state, then break
+        # because in this situation, the q_value should update
+        raise('Error: current_state is terminal state, check input source')
+    else:
+        for action in alpha_groups:
+            if action == 'alpha_hip++':
+                if current_state_index <= (state_sum-1):
+                    next_state_index = current_state_index+1
+                if current_state_index == state_sum: # the last state
+                    next_state_index = current_state_index
+            if action == 'alpha_hip--':
+                if current_state_index >= 1:
+                    next_state_index = current_state_index-1
+                if current_state_index == 0:
+                    next_state_index = current_state_index
+    return next_state_index

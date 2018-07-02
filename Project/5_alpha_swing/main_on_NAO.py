@@ -97,31 +97,8 @@ action_list = [ 'alpha_hip_roll++', 'alpha_hip_roll--', 'alpha_ankle_roll++', 'a
 # seperate the roll parameters and pitch parameters
 #action_list = ['alpha_hip_pitch++', 'alpha_hip_pitch--', 'alpha_ankle_pitch++', 'alpha_ankle_pitch--']
 
-
-
-
-def get_next_state_index(current_state_index, action):
-    '''
-    input   current_state_index: 0, 1, 2, 3, 4, 5, 6
-            action: string
-    output  next_state_index: int [0,6]
-    '''
-    if (current_state_index == 0) or (current_state_index == 6):
-        # if the random init is the terminal state, then break
-        # because in this situation, the q_value should update
-        raise('Error: current_state is terminal state, check input source')
-    else:
-        if action == 'alpha_hip++':
-            if current_state_index <= (state_sum-1):
-                next_state_index = current_state_index+1
-            if current_state_index == state_sum: # the last state
-                next_state_index = current_state_index
-        if action == 'alpha_hip--':
-            if current_state_index >= 1:
-                next_state_index = current_state_index-1
-            if current_state_index == 0:
-                next_state_index = current_state_index
-    return next_state_index
+# 一共有多少个state是由每个joint alpha值的可选取的数量决定的
+# 这里是3^3=81个state index_list [0, 80]
 
 # No need to calc alpha, just check table
 def execute_action(alpha_hip, action):
@@ -248,9 +225,11 @@ def train():
         print('WristForceSensor first print', sensor_data)
 
         # pick a random state from the state list
-        current_state_index = random.randint(0, state_sum)
-        current_state = state_list[current_state_index]
-        alpha_hip = current_state
+        current_state_index = random.randint(0, num_state)
+        # check if  state_dict is empty
+        print('---------------state dict----------------')
+        pprint.pprint(state_dict)
+        alpha_groups = state_dict[current_state_index]
         '''for each experiment'''
         k = 0
         while True:
@@ -263,8 +242,13 @@ def train():
             # compare the 2 sensor data, 
             print('WristForceSensor 2nd print', sensor_data)
 
-            if (current_state_index == 0) or (current_state_index == 6):
-
+            if (sensor_data > 1000):
+                reward = -10
+                # update Q-table
+                update_Q_table()
+                break
+            if (sensor_data < 300):
+                reward = 10
                 break
             print()
             print('############## k =', k, '###############')
