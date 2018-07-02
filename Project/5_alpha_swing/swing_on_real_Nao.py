@@ -29,6 +29,7 @@ global All_Sensor
 global All_FSR, All_cur_out,All_RG_out
 global All_PF_out, All_zmp, All_alpha
 
+wrist_sensor_list = []
 All_Command=[]
 All_Sensor=[]
 All_FSR = []
@@ -151,7 +152,12 @@ def change_alpha(alpha_groups):
 
 
 def swing_on_Nao(alpha_groups, looptimes):
-    #release_arm_stiffness()
+    '''
+        input   alpha_groups: [0.01, 0.03, 0.01, 0.02]
+                looptimes:    400
+        output  mean_loop_sensor: int
+    '''
+    release_arm_stiffness()
     sum_loop_sensor = 0
     print('alpha_groups is:', alpha_groups)
     store_data = []
@@ -169,56 +175,32 @@ def swing_on_Nao(alpha_groups, looptimes):
         myCont[i].joint.joint_motor_signal = myCont[i].joint.init_motor_pos
 
     change_alpha(alpha_groups)
+
+    #TextObj.say('My current alpha hip is'+str(alpha_hip))
     #######################################################################################
     ###############################      Main Loop    #####################################
     #######################################################################################
-    #TextObj.say('My current alpha hip is'+str(alpha_hip))
-
     # block time 0.04s for NAO to accomplish the movement
     time1 = time.time()
     for I in range(50, looptimes):
         # read sensor data every loop
-        #wrist_sensor = memProxy.getData("WristForceSensor")
-        #sum_loop_sensor = sum(wrist_sensor[0]) + sum(wrist_sensor[1]) + sum_loop_sensor
-        #print('sum(wrist_sensor) = ', sum_loop_sensor)
-        print("###############################################################")
-        print("########################### mark 2 ############################")
+        wrist_sensor = memProxy.getData("WristForceSensor")
+        two_sensor_sum = sum(wrist_sensor[0]) + sum(wrist_sensor[1])
+        sum_loop_sensor = two_sensor_sum + sum_loop_sensor
+        print('sum(wrist_sensor) = ', sum_loop_sensor)
+        print("########################### _____ ############################")
         #startTime = time.time()
         t= I*myT.T
-        print('t = ', t)
-        print('myT.T1:', myT.T1)
-        print('myT.T2:', myT.T2)
-
-        # # inject positive current
-        # if I == 10:
-        #     myT.T7 = t
-        #     myT.T8 = myT.T7 + myT.signal_pulse_width
-        #     tune_Ss_time_step = I +500
-        # if t >= myT.T7 and t <= myT.T8:
-        #     ExtInjCurr = 1; ExtInjCurr1 = -1
-        # else:
-        #     ExtInjCurr = 0; ExtInjCurr1 = 0
 
         if t>= myT.T1 and t < myT.T2:
             ExtInjCurr = 1
-        #elif t >= myT.T3 and t < myT.T4:
-        #    ExtInjCurr = 4.5
-        #elif t >= myT.T5 and t < myT.T6:    
-        #    ExtInjCurr = -4.5
         else: 
             ExtInjCurr = 0
-            
         if t>= myT.T3 and t < myT.T4:
             ExtInjCurr2 = -1
-        #elif t >= myT.T3 and t < myT.T4:
-        #    ExtInjCurr = 4.5
-        #elif t >= myT.T5 and t < myT.T6:    
-        #    ExtInjCurr = -4.5
         else: 
             ExtInjCurr2 = 0
 
-        print('ExtInjCurr', ExtInjCurr)
-        print('ExtInjCurr2', ExtInjCurr2)
         #if index == 0:
             # alpha_ankel = random.uniform(0, 0.15)
             # alpha_hip = random.uniform(0, 0.15)
@@ -248,6 +230,7 @@ def swing_on_Nao(alpha_groups, looptimes):
         initPos = NaoConnect.NaoGetAngles()
         All_Command.append(MotorCommand[:])
         All_Sensor.append(initPos)
+        wrist_sensor_list.append(two_sensor_sum)
 
         # block time 0.04s for NAO to accomplish the movement
         time2 = time.time()
@@ -257,6 +240,7 @@ def swing_on_Nao(alpha_groups, looptimes):
         #time_diff  = time2 - time1
         time1 = time2 
 
+    plot_wrist_sensor(wrist_sensor_list, 'Wrist_Sensor')
     fPlotJointCommandSensor(All_Command,All_Sensor,L_HIP_ROLL,'L_HIP_ROLL')
     fPlotJointCommandSensor(All_Command,All_Sensor,L_ANKLE_ROLL,'L_ANKLE_ROLL')
     fPlotJointCommandSensor(All_Command,All_Sensor,R_HIP_ROLL,'R_HIP_ROLL')
@@ -266,6 +250,7 @@ def swing_on_Nao(alpha_groups, looptimes):
     fPlotJointCommandSensor(All_Command,All_Sensor,L_KNEE_PITCH,'L_KNEE_PITCH')
     fPlotJointCommandSensor(All_Command,All_Sensor,R_KNEE_PITCH,'R_KNEE_PITCH')
     mean_loop_sensor = sum_loop_sensor/looptimes
+    print('mean_loop_sensor', mean_loop_sensor)
     return mean_loop_sensor
 
 def go_to_init_pos():

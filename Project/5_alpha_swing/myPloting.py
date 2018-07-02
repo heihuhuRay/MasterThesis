@@ -16,7 +16,15 @@ def fPlotJointCommandSensor(All_Command,All_Sensor,JointIndex,Str):
     plt.title(Str)
     plt.grid(True)
     plt.show()
-        
+
+def plot_wrist_sensor(sensor_list, Str):
+    plt.plot( range(len(sensor_list)), sensor_list,'b')
+    plt.xlabel('Time')
+    plt.ylabel('wrist_sensor_value')
+    plt.title(Str)
+    plt.grid(True)
+    plt.show()
+
 """
     # row and column sharing
     f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
