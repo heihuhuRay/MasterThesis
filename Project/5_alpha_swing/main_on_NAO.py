@@ -103,6 +103,8 @@ def train():
             # break while loop when end of this episode
             if if_done:
                 break
+        plot_wrist_sensor(wrist_sensor_list, 'Wrist_Sensor'+str(episode))
+        save_fig_wrist_sensor(wrist_sensor_list, 'Wrist_Sensor', episode)
 
     # end of game
     print('game over')

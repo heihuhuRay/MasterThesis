@@ -187,8 +187,8 @@ def swing_on_Nao(alpha_groups, looptimes):
         wrist_sensor = memProxy.getData("WristForceSensor")
         two_sensor_sum = sum(wrist_sensor[0]) + sum(wrist_sensor[1])
         sum_loop_sensor = two_sensor_sum + sum_loop_sensor
-        print('sum(wrist_sensor) = ', sum_loop_sensor)
-        print("########################### _____ ############################")
+        # print('sum(wrist_sensor) = ', sum_loop_sensor)
+        # print("########################### _____ ############################")
         #startTime = time.time()
         t= I*myT.T
 
@@ -240,15 +240,16 @@ def swing_on_Nao(alpha_groups, looptimes):
         #time_diff  = time2 - time1
         time1 = time2 
 
-    plot_wrist_sensor(wrist_sensor_list, 'Wrist_Sensor')
-    fPlotJointCommandSensor(All_Command,All_Sensor,L_HIP_ROLL,'L_HIP_ROLL')
-    fPlotJointCommandSensor(All_Command,All_Sensor,L_ANKLE_ROLL,'L_ANKLE_ROLL')
-    fPlotJointCommandSensor(All_Command,All_Sensor,R_HIP_ROLL,'R_HIP_ROLL')
-    fPlotJointCommandSensor(All_Command,All_Sensor,R_ANKLE_ROLL,'R_ANKLE_ROLL')
-    fPlotJointCommandSensor(All_Command,All_Sensor,R_HIP_PITCH,'R_HIP_PITCH')
-    fPlotJointCommandSensor(All_Command,All_Sensor,L_HIP_PITCH,'L_HIP_PITCH')
-    fPlotJointCommandSensor(All_Command,All_Sensor,L_KNEE_PITCH,'L_KNEE_PITCH')
-    fPlotJointCommandSensor(All_Command,All_Sensor,R_KNEE_PITCH,'R_KNEE_PITCH')
+
+    # plot_wrist_sensor(wrist_sensor_list, 'Wrist_Sensor')
+    # fPlotJointCommandSensor(All_Command,All_Sensor,L_HIP_ROLL,'L_HIP_ROLL')
+    # fPlotJointCommandSensor(All_Command,All_Sensor,L_ANKLE_ROLL,'L_ANKLE_ROLL')
+    # fPlotJointCommandSensor(All_Command,All_Sensor,R_HIP_ROLL,'R_HIP_ROLL')
+    # fPlotJointCommandSensor(All_Command,All_Sensor,R_ANKLE_ROLL,'R_ANKLE_ROLL')
+    # fPlotJointCommandSensor(All_Command,All_Sensor,R_HIP_PITCH,'R_HIP_PITCH')
+    # fPlotJointCommandSensor(All_Command,All_Sensor,L_HIP_PITCH,'L_HIP_PITCH')
+    # fPlotJointCommandSensor(All_Command,All_Sensor,L_KNEE_PITCH,'L_KNEE_PITCH')
+    # fPlotJointCommandSensor(All_Command,All_Sensor,R_KNEE_PITCH,'R_KNEE_PITCH')
     mean_loop_sensor = sum_loop_sensor/looptimes
     print('mean_loop_sensor', mean_loop_sensor)
     return mean_loop_sensor
