@@ -137,15 +137,15 @@ def check_reward(next_state_index, mean_loop_sensor):
         if_done = False
     return reward, if_done
 
-def update_Q_table(q_table, current_state_index, next_state_index, action, reward):
+def update_Q_table(if_done, q_table, current_state_index, next_state_index, action, reward):
     print('reward', reward)
-    current_state = state_list[current_state_index]
-    next_state = state_list[next_state_index]
-    q_current = q_table.loc[current_state, action]
+    #current_state = state_list[current_state_index]
+    #next_state = state_list[next_state_index]
+    q_current = q_table.loc[current_state_index, action]
     
     if current_state_index != 6: # if current state is not terminal state
         # the very key point of Q-learning, how q_value is updated
-        q_new = gamma * q_table.loc[next_state, :].max()
+        q_new = gamma * q_table.loc[next_state_index, :].max()
     else:
         q_new = 0  # next state is terminal
     q_table.loc[current_state, action] += lr * (reward + q_new - q_current)  # update

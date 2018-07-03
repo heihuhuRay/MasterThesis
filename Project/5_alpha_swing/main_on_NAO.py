@@ -94,7 +94,12 @@ def train():
             print('if_done', if_done)
 
             # 4, '''update Q-table'''
-            update_Q_table(current_state_index, next_state_index, action, reward)
+            for i in range(4):
+                # action_groups: ['ankle_roll+/-', 'knee_pitch+/-', 'hip_roll+/-', 'hip_pitch+/-']
+                # total_Q_table = [ankle_roll_Q_table, knee_pitch_Q_table, hip_roll_Q_table, hip_pitch_Q_table]
+                action = action_groups[0]
+                q_table = total_Q_table[0]
+                update_Q_table(if_done, q_table, current_state_index, next_state_index, action, reward)
             #print('Q_table', Q_table)
             #print('next_state_index ____2', next_state_index)
             current_state_index = next_state_index
