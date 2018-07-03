@@ -44,12 +44,11 @@ def train():
         print('------------------------------------')
         print('-----------episode No.', episode, '-----------')
         print('------------------------------------')
-        TextObj.say('Experiment'+ str(episode))
-        #print('Q_table', Q_table)
+        TextObj.say('test'+ str(episode))
 
         # pick a random state from the state list
         current_state_index = random.randint(0, num_state)
-        alpha_groups = state_dict[current_state_index]
+        alpha_groups = into_list(state_dict[current_state_index]) # this is a dict, not list
         '''for each experiment'''
         k = 0
         while True:
@@ -70,12 +69,13 @@ def train():
             print()
             print('############## k =', k, '###############')
             # 1, choose action based on current_state
+            curr_alpha_groups = alpha_groups
             action_groups = []
             action_groups = choose_action(current_state_index, total_Q_table)#after action, should calc state rather than alpha
 
             # 2, take action, calc next_state
             #print('current_state_index = ', current_state_index)
-            next_state_index, new_alpha_groups = get_next_state_and_new_alpha(current_state_index, action_groups, alpha_groups)
+            next_state_index, new_alpha_groups = get_next_state_and_new_alpha(current_state_index, action_groups, curr_alpha_groups)
 
             #TODO not run on NAO for now
             #swing_in_Vrep(alpha_hip) # execute the new alpha_hip in Vrep
@@ -99,6 +99,7 @@ def train():
             #print('Q_table', Q_table)
             #print('next_state_index ____2', next_state_index)
             current_state_index = next_state_index
+            curr_alpha_groups = new_alpha_groups
             # break while loop when end of this episode
             if if_done:
                 break

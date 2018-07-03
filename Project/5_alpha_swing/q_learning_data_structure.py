@@ -6,6 +6,8 @@ from decimal import Decimal
 
 # Selectable range of alphas
 available_alpha_para = [0.01, 0.02, 0.03]
+max_alpha = available_alpha_para[-1]
+min_alpha = available_alpha_para[0]
 ankle_roll_para = available_alpha_para
 knee_pitch_para = available_alpha_para
 hip_roll_para   = available_alpha_para
@@ -68,7 +70,7 @@ total_Q_table = [ankle_roll_Q_table, knee_pitch_Q_table, hip_roll_Q_table, hip_p
 def choose_action(current_state_index, total_Q_table):
     '''
     input   current_state_index: [0, 1, ...., 79, 80]
-            total_Q_table: [hip_roll_Q_table, hip_pitch_Q_table, ankle_roll_Q_table, knee_pitch_Q_table]
+            total_Q_table: [ankle_roll_Q_table, knee_pitch_Q_table, hip_roll_Q_table, hip_pitch_Q_table]
     output  action_groups: ['ankle_roll+/-', 'knee_pitch+/-', 'hip_roll+/-', 'hip_pitch+/-']
     '''
     action_groups = []
@@ -94,7 +96,7 @@ def get_next_state_and_new_alpha(current_state_index, action_groups, curr_alpha_
     input   current_state_index: [0, 1, ...., 79, 80]
             action_groups:       ['ankle_roll++', 'knee_pitch++', 'hip_roll--', 'hip_pitch++']
             curr_alpha_groups:   [0.02, 0.03, 0.01, 0.01]
-                                 [a_hip_pitch, a_hip_roll, a_knee_pitch, a_ankle_roll]
+                                 [a_ankle_roll, a_knee_pitch, a_hip_roll, a_hip_pitch]
     output  next_state_index:    [0, 1, ...., 79, 80]
             new_alpha_groups:    [0.01, 0.03, 0.01, 0.02]
     '''
@@ -102,12 +104,14 @@ def get_next_state_and_new_alpha(current_state_index, action_groups, curr_alpha_
     for action in action_groups:
         action = action[-2:]
         tmp_action_groups.append(action)
+    print('tmp_action_groups:', tmp_action_groups)
+    print('curr_alpha_groups:', curr_alpha_groups)
 
     for i in range(4):
         if tmp_action_groups[i] == '++':
-            curr_alpha_groups[i] = float(Decimal(str(curr_alpha_groups[i])) + Decimal('0.01'))
+            curr_alpha_groups[i] = float( Decimal(str(curr_alpha_groups[i])) + Decimal('0.01') )
         if tmp_action_groups[i] == '--':
-            curr_alpha_groups[i] = float(Decimal(str(curr_alpha_groups[i])) - Decimal('0.01'))
+            curr_alpha_groups[i] = float( Decimal(str(curr_alpha_groups[i])) - Decimal('0.01') )
     print('1:', curr_alpha_groups)
     
     new_alpha_groups = []
@@ -143,9 +147,25 @@ def update_Q_table(if_done, q_table, current_state_index, next_state_index, acti
     #next_state = state_list[next_state_index]
     q_current = q_table.loc[current_state_index, action]
     
-    if current_state_index != 6: # if current state is not terminal state
+    if if_done == False: # if current state is not terminal state
         # the very key point of Q-learning, how q_value is updated
         q_new = gamma * q_table.loc[next_state_index, :].max()
     else:
         q_new = 0  # next state is terminal
-    q_table.loc[current_state, action] += lr * (reward + q_new - q_current)  # update
+    q_table.loc[current_state_index, action] += lr * (reward + q_new - q_current)  # update
+
+def into_list(origin_dict):
+    '''
+    input   origin_dict:  { 'a_hip_roll': 0.01,
+                            'a_knee_pitch': 0.03,
+                            'a_ankle_roll': 0.01,
+                            'a_hip_pitch': 0.01 }
+    output  list        : [0.01, 0.03, 0.01, 0.01]
+                          [a_ankle_roll, a_knee_pitch, a_hip_roll, a_hip_pitch]
+    '''
+    alpha_list = [None, None, None, None]
+    alpha_list[0] = a_ankle_roll
+    alpha_list[1] = a_knee_pitch
+    alpha_list[2] = a_hip_roll
+    alpha_list[3] = a_hip_pitch
+    return alpha_list

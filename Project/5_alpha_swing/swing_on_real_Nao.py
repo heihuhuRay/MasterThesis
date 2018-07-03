@@ -254,6 +254,8 @@ def swing_on_Nao(alpha_groups, looptimes):
     return mean_loop_sensor
 
 def go_to_init_pos():
+    postObj = ALProxy("ALRobotPosture",NAOIP,PORT)
+    postObj.goToPosture('Stand',0.8)
     initPos = NaoConnect.NaoGetAngles()
     # move to init position
     angleCount = 0.0
@@ -262,8 +264,8 @@ def go_to_init_pos():
         initPos[R_KNEE_PITCH] = angleCount * math.pi / 180.0
         initPos[L_ANKLE_PITCH] = -0.66*angleCount * math.pi / 180.0
         initPos[R_ANKLE_PITCH] = -0.66*angleCount * math.pi / 180.0
-        initPos[L_HIP_PITCH] = -0.18*angleCount * math.pi / 180.0
-        initPos[R_HIP_PITCH] = -0.18*angleCount * math.pi / 180.0
+        initPos[L_HIP_PITCH] = -0.33*angleCount * math.pi / 180.0
+        initPos[R_HIP_PITCH] = -0.33*angleCount * math.pi / 180.0
         angleCount = angleCount + 1
         NaoConnect.NaoSetAngles(initPos)
 
