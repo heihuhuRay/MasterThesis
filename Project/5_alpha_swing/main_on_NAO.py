@@ -51,7 +51,7 @@ def train():
         alpha_groups = into_list(state_dict[current_state_index]) # this is a dict, not list
         '''for each experiment'''
         k = 0
-        while True:
+        while k<10:
             k += 1
             # if the random init is the terminal state, then break, because in this situation, the q_value should update
             # find a method to evaluate the boundry condition, like the robot fall down or not
@@ -103,9 +103,13 @@ def train():
             # break while loop when end of this episode
             if if_done:
                 break
-        plot_wrist_sensor(wrist_sensor_list, 'Wrist_Sensor'+str(episode))
+        #plot_wrist_sensor(wrist_sensor_list, 'Wrist_Sensor'+str(episode))
         save_fig_wrist_sensor(wrist_sensor_list, 'Wrist_Sensor', episode)
-
+    # save the last q table 
+    total_Q_table[0].to_json('ankle_roll_q_table.json')
+    total_Q_table[1].to_json('knee_pitch_q_table.json')
+    total_Q_table[2].to_json('hip_roll_q_table.json')
+    total_Q_table[3].to_json('hip_pitch_q_table.json')
     # end of game
     print('game over')
     
