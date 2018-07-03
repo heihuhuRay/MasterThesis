@@ -255,17 +255,15 @@ def swing_on_Nao(alpha_groups, looptimes):
 
 def go_to_init_pos():
     initPos = NaoConnect.NaoGetAngles()
-
     # move to init position
     angleCount = 0.0
-
     while angleCount <= 30:
         initPos[L_KNEE_PITCH] = angleCount * math.pi / 180.0
         initPos[R_KNEE_PITCH] = angleCount * math.pi / 180.0
         initPos[L_ANKLE_PITCH] = -0.66*angleCount * math.pi / 180.0
         initPos[R_ANKLE_PITCH] = -0.66*angleCount * math.pi / 180.0
-        initPos[L_HIP_PITCH] = -0.23*angleCount * math.pi / 180.0
-        initPos[R_HIP_PITCH] = -0.23*angleCount * math.pi / 180.0
+        initPos[L_HIP_PITCH] = -0.18*angleCount * math.pi / 180.0
+        initPos[R_HIP_PITCH] = -0.18*angleCount * math.pi / 180.0
         angleCount = angleCount + 1
         NaoConnect.NaoSetAngles(initPos)
 
@@ -277,5 +275,5 @@ def main():
     go_to_init_pos()
     swing_on_Nao([0.042, 0.011, 0.02, 0.022], 400)
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()

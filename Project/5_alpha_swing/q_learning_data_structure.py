@@ -52,8 +52,8 @@ for a_ankle_roll in ankle_roll_para:
 
 
 
-# 一共有多少个state是由每个joint alpha值的可选取的数量决定的
-# 这里是3^3=81个state index_list [0, 80]
+# How many states in total is defined by available joint alpha values
+# here is 3^3=81 state index_list [0, 80]
 num_state = len(state_dict.keys())
 index_list = state_dict.keys()
 

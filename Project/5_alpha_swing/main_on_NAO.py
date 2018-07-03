@@ -30,20 +30,21 @@ from q_learning_data_structure import *
 
 
 def train():
+    TextObj.say('Attention, Fall Manager is Disabled.')
+    movObj.setFallManagerEnabled(False) # True False
     go_to_init_pos()
     # Disable Fall Manager
     release_arm_stiffness() 
     TextObj.say('Please hold my wrist.')
-    TextObj.say('Attention, Fall Manager is Disabled.')
-    movObj.setFallManagerEnabled(False) # True False
     time.sleep(4)
     '''run 100 experiments'''
-    for episode in range(10):
+    for episode in range(5):
         release_arm_stiffness()
         print()
         print('------------------------------------')
         print('-----------episode No.', episode, '-----------')
         print('------------------------------------')
+        TextObj.say('Experiment'+ str(episode))
         #print('Q_table', Q_table)
 
         # pick a random state from the state list
@@ -56,30 +57,28 @@ def train():
         k = 0
         while True:
             k += 1
-            # if the random init is the terminal state, then break
-            # because in this situation, the q_value should update
+            # if the random init is the terminal state, then break, because in this situation, the q_value should update
             # find a method to evaluate the boundry condition, like the robot fall down or not
-            # maybe use the sensor value, if it exceeds a threshold
-            # compare the 2 sensor data, 
+
             sensor_data = memProxy.getData("WristForceSensor")
             sensor_data = sum(sensor_data[0]) + sum(sensor_data[1])
-            if (sensor_data > 1000):
-                reward = -10
-                # update Q-table
-                update_Q_table()
-                break
-            if (sensor_data < 300):
-                reward = 10
-                break
+            # if (sensor_data > 1000):
+            #     reward = -10
+            #     # update Q-table
+            #     update_Q_table()
+            #     break
+            # if (sensor_data < 300):
+            #     reward = 10
+            #     break
             print()
             print('############## k =', k, '###############')
             # 1, choose action based on current_state
             action_groups = []
-            action_groups = choose_action(current_state_index)#after action, should calc state rather than alpha
+            action_groups = choose_action(current_state_index, total_Q_table)#after action, should calc state rather than alpha
 
             # 2, take action, calc next_state
             #print('current_state_index = ', current_state_index)
-            next_state_index, new_alpha_groups = get_next_state_and_new_alpha(current_state_index, action_groups)
+            next_state_index, new_alpha_groups = get_next_state_and_new_alpha(current_state_index, action_groups, alpha_groups)
 
             #TODO not run on NAO for now
             #swing_in_Vrep(alpha_hip) # execute the new alpha_hip in Vrep
