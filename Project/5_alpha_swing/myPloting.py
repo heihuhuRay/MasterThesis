@@ -17,6 +17,23 @@ def fPlotJointCommandSensor(All_Command,All_Sensor,JointIndex,Str):
     plt.grid(True)
     plt.show()
 
+def save_fig_JointCommandSensor(All_Command,All_Sensor,JointIndex,Str,num):
+    
+    data2print1=[]
+    for i in range(0,len(All_Command)):
+        data2print1.append(All_Command[i][JointIndex])
+    
+    data2print2=[]
+    for i in range(0,len(All_Sensor)):
+        data2print2.append(All_Sensor[i][JointIndex])
+    
+    plt.plot( range(len(data2print1)), data2print1,'b', range(len(data2print2)),data2print2,'r')
+    plt.xlabel('Time')
+    plt.ylabel('Motor Command / Sensor Value')
+    plt.title(Str)
+    plt.grid(True)
+    plt.savefig(Str+'_'+str(num)+'.jpg')
+
 def plot_wrist_sensor(sensor_list, Str):
     plt.plot( range(len(sensor_list)), sensor_list,'b')
     plt.xlabel('Time')
@@ -31,7 +48,7 @@ def save_fig_wrist_sensor(sensor_list, Str, num):
     plt.ylabel('wrist_sensor_value')
     plt.title(Str)
     plt.grid(True)
-    plt.savefig(Str+'_'+str(num)+'.jpg')
+    plt.savefig(Str+'_'+str(num)+'.pdf')
 
 """
     # row and column sharing

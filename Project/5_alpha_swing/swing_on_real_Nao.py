@@ -41,7 +41,7 @@ All_alpha = []
 
 # tm : tau_m change the spped of the action
 # the larger the tau_m is the slower the action accomplished
-all_joint_tm = 0.09
+all_joint_tm = 0.07
 
 sigma_s_test = 8
 sigma_f_test = 8

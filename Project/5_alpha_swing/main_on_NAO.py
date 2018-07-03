@@ -38,7 +38,7 @@ def train():
     TextObj.say('Please hold my wrist.')
     time.sleep(4)
     '''run 100 experiments'''
-    for episode in range(5):
+    for episode in range(2):
         release_arm_stiffness()
         print()
         print('------------------------------------')
@@ -104,7 +104,15 @@ def train():
             if if_done:
                 break
         #plot_wrist_sensor(wrist_sensor_list, 'Wrist_Sensor'+str(episode))
-        save_fig_wrist_sensor(wrist_sensor_list, 'Wrist_Sensor', episode)
+    save_fig_wrist_sensor(wrist_sensor_list, 'Wrist_Sensor', episode)
+    save_fig_JointCommandSensor(All_Command,All_Sensor,L_HIP_ROLL,'L_HIP_ROLL',episode)
+    save_fig_JointCommandSensor(All_Command,All_Sensor,L_ANKLE_ROLL,'L_ANKLE_ROLL',episode)
+    save_fig_JointCommandSensor(All_Command,All_Sensor,R_HIP_ROLL,'R_HIP_ROLL',episode)
+    save_fig_JointCommandSensor(All_Command,All_Sensor,R_ANKLE_ROLL,'R_ANKLE_ROLL',episode)
+    save_fig_JointCommandSensor(All_Command,All_Sensor,R_HIP_PITCH,'R_HIP_PITCH',episode)
+    save_fig_JointCommandSensor(All_Command,All_Sensor,L_HIP_PITCH,'L_HIP_PITCH',episode)
+    save_fig_JointCommandSensor(All_Command,All_Sensor,L_KNEE_PITCH,'L_KNEE_PITCH',episode)
+    save_fig_JointCommandSensor(All_Command,All_Sensor,R_KNEE_PITCH,'R_KNEE_PITCH',episode)
     # save the last q table 
     total_Q_table[0].to_json('ankle_roll_q_table.json')
     total_Q_table[1].to_json('knee_pitch_q_table.json')
