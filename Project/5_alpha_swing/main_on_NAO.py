@@ -49,9 +49,6 @@ def train():
 
         # pick a random state from the state list
         current_state_index = random.randint(0, num_state)
-        # check if  state_dict is empty
-        print('---------------state dict----------------')
-        pprint.pprint(state_dict)
         alpha_groups = state_dict[current_state_index]
         '''for each experiment'''
         k = 0
