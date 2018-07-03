@@ -22,31 +22,12 @@ from q_learning_data_structure import *
 
 
 
-def update_Q_table(q_table, current_state_index, next_state_index, action, reward):
-    print('reward', reward)
-    current_state = state_list[current_state_index]
-    next_state = state_list[next_state_index]
-    q_current = q_table.loc[current_state, action]
-    
-    if current_state_index != 6: # if current state is not terminal state
-        # the very key point of Q-learning, how q_value is updated
-        q_new = gamma * q_table.loc[next_state, :].max()
-    else:
-        q_new = 0  # next state is terminal
-    q_table.loc[current_state, action] += lr * (reward + q_new - q_current)  # update
-
-
 # def check_reward(next_state_index):
 #     reward = reward_list[next_state_index]
 #     if_done = is_next_state_done[next_state_index]
 #     return reward, if_done
 
-def check_reward(next_state_index, mean_loop_sensor):
-    #TODO calc the reward
-    reward = 100 - mean_loop_sensor/100
-    #reward = reward_list[next_state_index]
-    if_done = is_next_state_done[next_state_index]
-    return reward, if_done
+
 
 def train():
     go_to_init_pos()
