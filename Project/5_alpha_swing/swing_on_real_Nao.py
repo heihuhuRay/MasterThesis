@@ -213,12 +213,12 @@ def swing_on_Nao(alpha_groups, looptimes):
             myCont[ii].RG.E.InjCurrent_value = +1 * (ExtInjCurr) * myCont[ii].RG.E.InjCurrent_MultiplicationFactor
 
         for ii in [R_HIP_PITCH, R_KNEE_PITCH, L_ANKLE_PITCH]:
-            myCont[ii].RG.F.InjCurrent_value = +1*ExtInjCurr2* myCont[ii].RG.F.InjCurrent_MultiplicationFactor
-            myCont[ii].RG.E.InjCurrent_value = -1*ExtInjCurr2* myCont[ii].RG.E.InjCurrent_MultiplicationFactor
-
-        for ii in [L_HIP_PITCH,  L_KNEE_PITCH, R_ANKLE_PITCH]:
             myCont[ii].RG.F.InjCurrent_value = -1*ExtInjCurr2* myCont[ii].RG.F.InjCurrent_MultiplicationFactor
             myCont[ii].RG.E.InjCurrent_value = +1*ExtInjCurr2* myCont[ii].RG.E.InjCurrent_MultiplicationFactor
+
+        for ii in [L_HIP_PITCH,  L_KNEE_PITCH, R_ANKLE_PITCH]:
+            myCont[ii].RG.F.InjCurrent_value = +1*ExtInjCurr2* myCont[ii].RG.F.InjCurrent_MultiplicationFactor
+            myCont[ii].RG.E.InjCurrent_value = -1*ExtInjCurr2* myCont[ii].RG.E.InjCurrent_MultiplicationFactor
 
         for i in [L_HIP_ROLL, L_ANKLE_ROLL,R_HIP_ROLL, R_ANKLE_ROLL,R_HIP_PITCH, R_KNEE_PITCH, L_ANKLE_PITCH,L_HIP_PITCH, L_KNEE_PITCH, R_ANKLE_PITCH]:
             myCont[i].fUpdateLocomotionNetwork(myT, initPos[i])
@@ -261,12 +261,17 @@ def go_to_init_pos():
     # move to init position
     angleCount = 0.0
     while angleCount <= 30:
-        initPos[L_KNEE_PITCH] = angleCount * math.pi / 180.0
-        initPos[R_KNEE_PITCH] = angleCount * math.pi / 180.0
         initPos[L_ANKLE_PITCH] = -0.66*angleCount * math.pi / 180.0
         initPos[R_ANKLE_PITCH] = -0.66*angleCount * math.pi / 180.0
+        initPos[L_KNEE_PITCH] = angleCount * math.pi / 180.0
+        initPos[R_KNEE_PITCH] = angleCount * math.pi / 180.0
+        initPos[L_HIP_ROLL] = 0.18*angleCount * math.pi / 180.0
+        initPos[R_HIP_ROLL] = -0.18*angleCount * math.pi / 180.0
         initPos[L_HIP_PITCH] = -0.33*angleCount * math.pi / 180.0
         initPos[R_HIP_PITCH] = -0.33*angleCount * math.pi / 180.0
+        initPos[L_HIP_YAW_PITCH] = -0.33*angleCount * math.pi / 180.0
+        initPos[R_HIP_YAW_PITCH] = -0.33*angleCount * math.pi / 180.0
+        
         angleCount = angleCount + 1
         NaoConnect.NaoSetAngles(initPos)
 

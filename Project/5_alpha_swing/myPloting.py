@@ -50,6 +50,14 @@ def save_fig_wrist_sensor(sensor_list, Str, num):
     plt.grid(True)
     plt.savefig(Str+'_'+str(num)+'.pdf')
 
+def plot_center_weight(sensor_list, Str):
+    plt.plot( range(len(sensor_list)), sensor_list,'b')
+    plt.xlabel('angle in X')
+    plt.ylabel('angle in Y')
+    plt.title(Str)
+    plt.grid(True)
+    plt.show()
+
 """
     # row and column sharing
     f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
