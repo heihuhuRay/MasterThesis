@@ -156,7 +156,12 @@ def swing_on_Nao(alpha_groups, looptimes):
         input   alpha_groups: [0.01, 0.03, 0.01, 0.02]
                 looptimes:    400
         output  mean_loop_sensor: int
+                sensor_xyz = [robo_orientaion_x, robo_orientaion_y, robo_orientaion_z]
     '''
+    robo_orientaion_x = []
+    robo_orientaion_y = []
+    robo_orientaion_z = []
+    sensor_xyz = []
     release_arm_stiffness()
     sum_loop_sensor = 0
     print('alpha_groups is:', alpha_groups)
@@ -250,9 +255,14 @@ def swing_on_Nao(alpha_groups, looptimes):
     # fPlotJointCommandSensor(All_Command,All_Sensor,L_HIP_PITCH,'L_HIP_PITCH')
     # fPlotJointCommandSensor(All_Command,All_Sensor,L_KNEE_PITCH,'L_KNEE_PITCH')
     # fPlotJointCommandSensor(All_Command,All_Sensor,R_KNEE_PITCH,'R_KNEE_PITCH')
+    (FsrLeft, FsrRight, robPos, robOrient, HeadTouch, HandTouchLeft, HandTouchRight) = NaoConnect.NaoGetSensors()
+    robo_orientaion_x.append(robOrient[0])
+    robo_orientaion_y.append(robOrient[1])
+    robo_orientaion_z.append(robOrient[2])
     mean_loop_sensor = sum_loop_sensor/looptimes
     print('mean_loop_sensor', mean_loop_sensor)
-    return mean_loop_sensor
+    sensor_xyz = [robo_orientaion_x, robo_orientaion_y, robo_orientaion_z]
+    return mean_loop_sensor, sensor_xyz
 
 def go_to_init_pos():
     postObj = ALProxy("ALRobotPosture",NAOIP,PORT)
@@ -279,9 +289,9 @@ def go_to_init_pos():
     
     time.sleep(2)
 
-def main():
-    go_to_init_pos()
-    swing_on_Nao([0.042, 0.011, 0.02, 0.022], 400)
+# def main():
+#     go_to_init_pos()
+#     swing_on_Nao([0.042, 0.011, 0.02, 0.022], 400)
 
 # if __name__ == '__main__':
 #     main()

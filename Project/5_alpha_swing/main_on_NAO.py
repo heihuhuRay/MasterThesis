@@ -19,7 +19,9 @@ from MLMPCPG import *
 from naoqi import ALProxy
 from swing_on_real_Nao import *
 from q_learning_data_structure import *
+from phase_diagram import *
 
+#sensor_xyz = [robo_orientaion_x, robo_orientaion_y, robo_orientaion_z]
 
 
 # def check_reward(next_state_index):
@@ -30,6 +32,11 @@ from q_learning_data_structure import *
 
 
 def train():
+    phrase_xyz = []
+
+    phrase_x = []
+    phrase_y = []
+    phrase_z = []
     TextObj.say('Attention, Fall Manager is Disabled.')
     movObj.setFallManagerEnabled(False) # True False
     go_to_init_pos()
@@ -79,8 +86,12 @@ def train():
 
             #TODO not run on NAO for now
             #swing_in_Vrep(alpha_hip) # execute the new alpha_hip in Vrep
-            mean_loop_sensor = swing_on_Nao(new_alpha_groups, 340)
-
+            mean_loop_sensor, phrase_xyz = swing_on_Nao(new_alpha_groups, 340)
+            print(phrase_x)
+            phrase_x = phrase_x + phrase_xyz[0]
+            phrase_y += phrase_xyz[1]
+            phrase_z += phrase_xyz[2]
+            go_to_init_pos()
             #go_to_init_pos()
             print('mean_loop_sensor', mean_loop_sensor)
             #time.sleep(5)
@@ -122,6 +133,9 @@ def train():
     total_Q_table[2].to_json('hip_roll_q_table.json')
     total_Q_table[3].to_json('hip_pitch_q_table.json')
     # end of game
+    cal_derivities(phrase_x, 0.015)
+    cal_derivities(phrase_y, 0.015)
+    cal_derivities(phrase_z, 0.015)
     print('game over')
     
 
