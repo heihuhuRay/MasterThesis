@@ -19,7 +19,9 @@ from MLMPCPG import *
 from naoqi import ALProxy
 from swing_on_real_Nao import *
 from q_learning_data_structure import *
+from phase_diagram import *
 
+#sensor_xyz = [robo_orientaion_x, robo_orientaion_y, robo_orientaion_z]
 
 
 # def check_reward(next_state_index):
@@ -30,6 +32,11 @@ from q_learning_data_structure import *
 
 
 def train():
+    phrase_xyz = []
+
+    phrase_x = []
+    phrase_y = []
+    phrase_z = []
     TextObj.say('Attention, Fall Manager is Disabled.')
     movObj.setFallManagerEnabled(False) # True False
     go_to_init_pos()
@@ -51,7 +58,7 @@ def train():
         alpha_groups = into_list(state_dict[current_state_index]) # this is a dict, not list
         '''for each experiment'''
         k = 0
-        while k<10:
+        while k<5:
             k += 1
             # if the random init is the terminal state, then break, because in this situation, the q_value should update
             # find a method to evaluate the boundry condition, like the robot fall down or not
@@ -79,7 +86,13 @@ def train():
 
             #TODO not run on NAO for now
             #swing_in_Vrep(alpha_hip) # execute the new alpha_hip in Vrep
-            mean_loop_sensor = swing_on_Nao(new_alpha_groups, 400)
+            mean_loop_sensor, phrase_xyz = swing_on_Nao(new_alpha_groups, 340)
+            print(phrase_x)
+            phrase_x = phrase_x + phrase_xyz[0]
+            phrase_y += phrase_xyz[1]
+            phrase_z += phrase_xyz[2]
+            go_to_init_pos()
+            #go_to_init_pos()
             print('mean_loop_sensor', mean_loop_sensor)
             #time.sleep(5)
 
@@ -105,20 +118,24 @@ def train():
                 break
         #plot_wrist_sensor(wrist_sensor_list, 'Wrist_Sensor'+str(episode))
     save_fig_wrist_sensor(wrist_sensor_list, 'Wrist_Sensor', episode)
-    save_fig_JointCommandSensor(All_Command,All_Sensor,L_HIP_ROLL,'L_HIP_ROLL',episode)
-    save_fig_JointCommandSensor(All_Command,All_Sensor,L_ANKLE_ROLL,'L_ANKLE_ROLL',episode)
-    save_fig_JointCommandSensor(All_Command,All_Sensor,R_HIP_ROLL,'R_HIP_ROLL',episode)
-    save_fig_JointCommandSensor(All_Command,All_Sensor,R_ANKLE_ROLL,'R_ANKLE_ROLL',episode)
-    save_fig_JointCommandSensor(All_Command,All_Sensor,R_HIP_PITCH,'R_HIP_PITCH',episode)
-    save_fig_JointCommandSensor(All_Command,All_Sensor,L_HIP_PITCH,'L_HIP_PITCH',episode)
-    save_fig_JointCommandSensor(All_Command,All_Sensor,L_KNEE_PITCH,'L_KNEE_PITCH',episode)
-    save_fig_JointCommandSensor(All_Command,All_Sensor,R_KNEE_PITCH,'R_KNEE_PITCH',episode)
+    
+    # save_fig_JointCommandSensor(All_Command,All_Sensor,L_HIP_ROLL,'L_HIP_ROLL',episode)
+    # save_fig_JointCommandSensor(All_Command,All_Sensor,L_ANKLE_ROLL,'L_ANKLE_ROLL',episode)
+    # save_fig_JointCommandSensor(All_Command,All_Sensor,R_HIP_ROLL,'R_HIP_ROLL',episode)
+    # save_fig_JointCommandSensor(All_Command,All_Sensor,R_ANKLE_ROLL,'R_ANKLE_ROLL',episode)
+    # save_fig_JointCommandSensor(All_Command,All_Sensor,R_HIP_PITCH,'R_HIP_PITCH',episode)
+    # save_fig_JointCommandSensor(All_Command,All_Sensor,L_HIP_PITCH,'L_HIP_PITCH',episode)
+    # save_fig_JointCommandSensor(All_Command,All_Sensor,L_KNEE_PITCH,'L_KNEE_PITCH',episode)
+    # save_fig_JointCommandSensor(All_Command,All_Sensor,R_KNEE_PITCH,'R_KNEE_PITCH',episode)
     # save the last q table 
     total_Q_table[0].to_json('ankle_roll_q_table.json')
     total_Q_table[1].to_json('knee_pitch_q_table.json')
     total_Q_table[2].to_json('hip_roll_q_table.json')
     total_Q_table[3].to_json('hip_pitch_q_table.json')
     # end of game
+    cal_derivities(phrase_x, 0.015)
+    cal_derivities(phrase_y, 0.015)
+    cal_derivities(phrase_z, 0.015)
     print('game over')
     
 
