@@ -59,6 +59,7 @@ def train():
         '''for each experiment'''
         k = 0
         while k<5:
+            TextObj.say('K'+str(k))
             k += 1
             # if the random init is the terminal state, then break, because in this situation, the q_value should update
             # find a method to evaluate the boundry condition, like the robot fall down or not
@@ -91,6 +92,8 @@ def train():
             phrase_x = phrase_x + phrase_xyz[0]
             phrase_y += phrase_xyz[1]
             phrase_z += phrase_xyz[2]
+            TextObj.say('ready to go to initial positon')
+            time.sleep(2)
             go_to_init_pos()
             #go_to_init_pos()
             print('mean_loop_sensor', mean_loop_sensor)
@@ -106,8 +109,8 @@ def train():
             for i in range(4):
                 # action_groups: ['ankle_roll+/-', 'knee_pitch+/-', 'hip_roll+/-', 'hip_pitch+/-']
                 # total_Q_table = [ankle_roll_Q_table, knee_pitch_Q_table, hip_roll_Q_table, hip_pitch_Q_table]
-                action = action_groups[0]
-                q_table = total_Q_table[0]
+                action = action_groups[i]
+                q_table = total_Q_table[i]
                 update_Q_table(if_done, q_table, current_state_index, next_state_index, action, reward)
             #print('Q_table', Q_table)
             #print('next_state_index ____2', next_state_index)
@@ -128,10 +131,10 @@ def train():
     # save_fig_JointCommandSensor(All_Command,All_Sensor,L_KNEE_PITCH,'L_KNEE_PITCH',episode)
     # save_fig_JointCommandSensor(All_Command,All_Sensor,R_KNEE_PITCH,'R_KNEE_PITCH',episode)
     # save the last q table 
-    total_Q_table[0].to_json('ankle_roll_q_table.json')
-    total_Q_table[1].to_json('knee_pitch_q_table.json')
-    total_Q_table[2].to_json('hip_roll_q_table.json')
-    total_Q_table[3].to_json('hip_pitch_q_table.json')
+    total_Q_table[0].to_csv('ankle_roll_q_table.csv', index = False)
+    total_Q_table[1].to_csv('knee_pitch_q_table.csv', index = False)
+    total_Q_table[2].to_csv('hip_roll_q_table.csv', index = False)
+    total_Q_table[3].to_csv('hip_pitch_q_table.csv', index = False)
     # end of game
     cal_derivities(phrase_x, 0.015)
     cal_derivities(phrase_y, 0.015)

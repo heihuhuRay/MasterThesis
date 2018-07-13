@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import math
 import pprint
+import os
 from decimal import Decimal
 
 # Selectable range of alphas
@@ -59,10 +60,29 @@ for a_ankle_roll in ankle_roll_para:
 num_state = len(state_dict.keys())
 index_list = state_dict.keys()
 
-ankle_roll_Q_table = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['ankle_roll++','ankle_roll--'], dtype=np.float64)
-knee_pitch_Q_table = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['knee_pitch++','knee_pitch--'], dtype=np.float64)
-hip_roll_Q_table   = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['hip_roll++',  'hip_roll--'], dtype=np.float64)
-hip_pitch_Q_table  = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['hip_pitch++', 'hip_pitch--'], dtype=np.float64)
+if os.path.exists('ankle_roll_q_table.csv'):
+    ankle_roll_Q_table = pd.read_csv('ankle_roll_q_table.csv')
+else:
+    print('First time run this problem, if not first time, then Error!')
+    ankle_roll_Q_table = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['ankle_roll++','ankle_roll--'], dtype=np.float64)
+
+if os.path.exists('knee_pitch_q_table.csv'):
+    knee_pitch_Q_table = pd.read_csv('knee_pitch_q_table.csv')
+else:
+    print('First time run this problem, if not first time, then Error!')
+    knee_pitch_Q_table = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['knee_pitch++','knee_pitch--'], dtype=np.float64)
+
+if os.path.exists('hip_roll_q_table.csv'):
+    hip_roll_Q_table = pd.read_csv('hip_roll_q_table.csv')
+else:
+    print('First time run this problem, if not first time, then Error!')
+    hip_roll_Q_table   = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['hip_roll++',  'hip_roll--'], dtype=np.float64)
+
+if os.path.exists('hip_pitch_q_table.csv'):
+    hip_pitch_Q_table = pd.read_csv('hip_pitch_q_table.csv')
+else:
+    print('First time run this problem, if not first time, then Error!')
+    hip_pitch_Q_table  = pd.DataFrame(np.zeros((num_state,2)), index=index_list, columns=['hip_pitch++', 'hip_pitch--'], dtype=np.float64)
 
 # action_groups: ['ankle_roll+/-', 'knee_pitch+/-', 'hip_roll+/-', 'hip_pitch+/-']
 total_Q_table = [ankle_roll_Q_table, knee_pitch_Q_table, hip_roll_Q_table, hip_pitch_Q_table]
