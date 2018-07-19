@@ -244,8 +244,10 @@ def swing_on_Nao(alpha_groups, looptimes):
         #print 'time diff: ', time2 - time1
         #time_diff  = time2 - time1
         time1 = time2 
-
-
+        (FsrLeft, FsrRight, robPos, robOrient, HeadTouch, HandTouchLeft, HandTouchRight) = NaoConnect.NaoGetSensors()
+        robo_orientaion_x.append(robOrient[0])
+        robo_orientaion_y.append(robOrient[1])
+        robo_orientaion_z.append(robOrient[2])
     # plot_wrist_sensor(wrist_sensor_list, 'Wrist_Sensor')
     # fPlotJointCommandSensor(All_Command,All_Sensor,L_HIP_ROLL,'L_HIP_ROLL')
     # fPlotJointCommandSensor(All_Command,All_Sensor,L_ANKLE_ROLL,'L_ANKLE_ROLL')
@@ -255,12 +257,8 @@ def swing_on_Nao(alpha_groups, looptimes):
     # fPlotJointCommandSensor(All_Command,All_Sensor,L_HIP_PITCH,'L_HIP_PITCH')
     # fPlotJointCommandSensor(All_Command,All_Sensor,L_KNEE_PITCH,'L_KNEE_PITCH')
     # fPlotJointCommandSensor(All_Command,All_Sensor,R_KNEE_PITCH,'R_KNEE_PITCH')
-    (FsrLeft, FsrRight, robPos, robOrient, HeadTouch, HandTouchLeft, HandTouchRight) = NaoConnect.NaoGetSensors()
-    robo_orientaion_x.append(robOrient[0])
-    robo_orientaion_y.append(robOrient[1])
-    robo_orientaion_z.append(robOrient[2])
     mean_loop_sensor = sum_loop_sensor/looptimes
-    print('mean_loop_sensor', mean_loop_sensor)
+    #print('mean_loop_sensor', mean_loop_sensor)
     sensor_xyz = [robo_orientaion_x, robo_orientaion_y, robo_orientaion_z]
     return mean_loop_sensor, sensor_xyz
 

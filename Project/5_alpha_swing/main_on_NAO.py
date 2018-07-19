@@ -45,7 +45,7 @@ def train():
     TextObj.say('Please hold my wrist.')
     time.sleep(4)
     '''run 100 experiments'''
-    for episode in range(2):
+    for episode in range(10):
         release_arm_stiffness()
         print()
         print('------------------------------------')
@@ -58,7 +58,7 @@ def train():
         alpha_groups = into_list(state_dict[current_state_index]) # this is a dict, not list
         '''for each experiment'''
         k = 0
-        while k<5:
+        while k<3:
             TextObj.say('K'+str(k))
             k += 1
             # if the random init is the terminal state, then break, because in this situation, the q_value should update
@@ -88,11 +88,11 @@ def train():
             #TODO not run on NAO for now
             #swing_in_Vrep(alpha_hip) # execute the new alpha_hip in Vrep
             mean_loop_sensor, phrase_xyz = swing_on_Nao(new_alpha_groups, 340)
-            print(phrase_x)
+            print('______phrase_xyz________:', phrase_xyz)
             phrase_x = phrase_x + phrase_xyz[0]
             phrase_y += phrase_xyz[1]
             phrase_z += phrase_xyz[2]
-            TextObj.say('ready to go to initial positon')
+            TextObj.say('ready to go to initial position')
             time.sleep(2)
             go_to_init_pos()
             #go_to_init_pos()
