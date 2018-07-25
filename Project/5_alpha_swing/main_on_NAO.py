@@ -44,8 +44,11 @@ def train():
     release_arm_stiffness() 
     TextObj.say('Please hold my wrist.')
     time.sleep(4)
+
+    unfinished_list = [16, 17, 18, 20, 22]
+
     '''run 100 experiments'''
-    for episode in range(10):
+    for episode in range(5):
         release_arm_stiffness()
         print()
         print('------------------------------------')
@@ -54,11 +57,15 @@ def train():
         TextObj.say('test'+ str(episode))
 
         # pick a random state from the state list
-        current_state_index = random.randint(0, num_state)
+        #current_state_index = random.randint(0, num_state)
+        current_state_index = unfinished_list[episode]
         alpha_groups = into_list(state_dict[current_state_index]) # this is a dict, not list
+        print('===========state_dict:', state_dict)
+        print('+++++++++++state_index:', current_state_index)
+        print('___________alpha_groups:', state_dict[current_state_index])
         '''for each experiment'''
         k = 0
-        while k<3:
+        while k<2:
             TextObj.say('K'+str(k))
             k += 1
             # if the random init is the terminal state, then break, because in this situation, the q_value should update
@@ -88,7 +95,7 @@ def train():
             #TODO not run on NAO for now
             #swing_in_Vrep(alpha_hip) # execute the new alpha_hip in Vrep
             mean_loop_sensor, phrase_xyz = swing_on_Nao(new_alpha_groups, 340)
-            print('______phrase_xyz________:', phrase_xyz)
+            #print('______phrase_xyz________:', phrase_xyz)
             phrase_x = phrase_x + phrase_xyz[0]
             phrase_y += phrase_xyz[1]
             phrase_z += phrase_xyz[2]

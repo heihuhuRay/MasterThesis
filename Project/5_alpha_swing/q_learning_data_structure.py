@@ -132,7 +132,7 @@ def get_next_state_and_new_alpha(current_state_index, action_groups, curr_alpha_
             curr_alpha_groups[i] = float( Decimal(str(curr_alpha_groups[i])) + Decimal('0.01') )
         if tmp_action_groups[i] == '--':
             curr_alpha_groups[i] = float( Decimal(str(curr_alpha_groups[i])) - Decimal('0.01') )
-    print('1:', curr_alpha_groups)
+    #print('1:', curr_alpha_groups)
     
     new_alpha_groups = []
     for new_alpha in curr_alpha_groups:
@@ -144,7 +144,7 @@ def get_next_state_and_new_alpha(current_state_index, action_groups, curr_alpha_
             new_alpha_groups.append(new_alpha)
         else:
             new_alpha_groups.append(new_alpha)
-    print('2:', new_alpha_groups)
+    #print('2:', new_alpha_groups)
     
     next_state_index = alpha_groups_to_state_index(new_alpha_groups, single_alpha_options)
     
