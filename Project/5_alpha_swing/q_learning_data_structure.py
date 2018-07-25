@@ -4,6 +4,7 @@ import math
 import pprint
 import os
 from decimal import Decimal
+import state_dictionary as sd
 
 # Selectable range of alphas
 available_alpha_para = [0.01, 0.02, 0.03]
@@ -21,7 +22,7 @@ epsilon = 0.9 #e_greedy=0.9
 
 single_alpha_options = len(ankle_roll_para)
 
-state_dict = {}
+state_dict = sd.state
 
 # alpha_groups = [0.02, 0.03, 0.01, 0.01]
 def alpha_groups_to_state_index(alpha_groups, single_alpha_options):
@@ -36,7 +37,7 @@ def alpha_groups_to_state_index(alpha_groups, single_alpha_options):
     #state_index = a_0*27 + a_1*9 + a_2*3 + a_3
     return state_index
 
-
+'''
 for a_ankle_roll in ankle_roll_para:
     for a_knee_pitch in knee_pitch_para:
         for a_hip_roll in hip_roll_para:
@@ -52,7 +53,7 @@ for a_ankle_roll in ankle_roll_para:
                 l = [a_ankle_roll, a_knee_pitch, a_hip_roll, a_hip_pitch]
                 num = alpha_groups_to_state_index(l, single_alpha_options)
                 state_dict[num] = base_dict
-
+'''
 
 
 # How many states in total is defined by available joint alpha values
